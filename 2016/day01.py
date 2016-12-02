@@ -1,5 +1,4 @@
 import fileinput
-import sys
 
 DIRS = [
     (1, 0),  # north
