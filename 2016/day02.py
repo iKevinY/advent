@@ -7,34 +7,30 @@ KEYPAD_1 = [
 ]
 
 KEYPAD_2 = [
-    [None, None, '1', None, None],
-    [None, '2',  '3',  '4', None],
-    ['5',  '6',  '7',  '8',  '9'],
-    [None, 'A',  'B',  'C', None],
-    [None, None, 'D', None, None],
+    ['_', '_', '1', '_', '_'],
+    ['_', '2', '3', '4', '_'],
+    ['5', '6', '7', '8', '9'],
+    ['_', 'A', 'B', 'C', '_'],
+    ['_', '_', 'D', '_', '_'],
 ]
 
 DIRS = {
-    'U': lambda (x, y), keypad: move(x, y, keypad,  0, -1),
-    'D': lambda (x, y), keypad: move(x, y, keypad,  0,  1),
-    'L': lambda (x, y), keypad: move(x, y, keypad, -1,  0),
-    'R': lambda (x, y), keypad: move(x, y, keypad,  1,  0),
+    'U': (0, -1),
+    'D': (0, 1),
+    'L': (-1, 0),
+    'R': (1, 0),
 }
 
 
-def move(x, y, keypad, d_x, d_y):
-    """Returns the (x, y) coordinate after (possibly) moving"""
-    new_x = x + d_x
-    new_y = y + d_y
+def move(keypad, pos, d):
+    """Returns the (x, y) coordinate after (possibly) moving."""
+    new_x = max(0, min(pos[0] + DIRS[d][0], len(keypad[0]) - 1))
+    new_y = max(0, min(pos[1] + DIRS[d][1], len(keypad) - 1))
 
-    if new_x < 0 or new_x >= len(keypad[0]):
-        return (x, y)
-    elif new_y < 0 or new_y >= len(keypad):
-        return (x, y)
-    elif keypad[y + d_y][x + d_x] is None:
-        return (x, y)
+    if keypad[new_y][new_x] == '_':
+        return pos
     else:
-        return (x + d_x, y + d_y)
+        return (new_x, new_y)
 
 
 pos_1 = (1, 1)  # start in middle
@@ -45,8 +41,8 @@ code_2 = ''
 
 for i, line in enumerate(fileinput.input()):
     for c in line.strip():
-        pos_1 = DIRS[c](pos_1, KEYPAD_1)
-        pos_2 = DIRS[c](pos_2, KEYPAD_2)
+        pos_1 = move(KEYPAD_1, pos_1, c)
+        pos_2 = move(KEYPAD_2, pos_2, c)
 
     code_1 += KEYPAD_1[pos_1[1]][pos_1[0]]
     code_2 += KEYPAD_2[pos_2[1]][pos_2[0]]
