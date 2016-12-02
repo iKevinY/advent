@@ -1,17 +1,17 @@
 import fileinput
+from utils import Point
 
 DIRS = [
-    (1, 0),  # north
-    (0, 1),  # east
-    (-1, 0), # south
-    (0, -1)  # west
+    Point(1, 0),  # north
+    Point(0, 1),  # east
+    Point(-1, 0), # south
+    Point(0, -1)  # west
 ]
 
 seen = set()
-double_visit = False
+double_visit = ''
 
-x = 0
-y = 0
+pos = Point(0, 0)
 facing = 0
 
 for line in fileinput.input():
@@ -27,13 +27,11 @@ for line in fileinput.input():
             facing = (facing + 1) % 4
 
         for _ in range(steps):
-            x += DIRS[facing][0]
-            y += DIRS[facing][1]
-
-            if not double_visit and (x, y) in seen:
-                print "First double-visit at ({}, {}) ({} blocks away)".format(x, y, abs(x) + abs(y))
-                double_visit = True
+            pos += DIRS[facing]
+            if not double_visit and pos in seen:
+                double_visit = "First double-visit at ({}, {}) ({} blocks away)".format(pos.x, pos.y, pos.manhattan)
             else:
-                seen.add((x, y))
+                seen.add(pos)
 
-print "Easter Bunny HQ is at ({}, {}) ({} blocks away)".format(x, y, abs(x) + abs(y))
+print "Easter Bunny HQ is at ({}, {}) ({} blocks away)".format(pos.x, pos.y, pos.manhattan)
+print double_visit
