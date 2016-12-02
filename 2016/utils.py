@@ -1,4 +1,6 @@
+import math
 from functools import total_ordering
+
 
 @total_ordering
 class Point:
@@ -40,3 +42,7 @@ class Point:
     @property
     def manhattan(self):
         return abs(self.x) + abs(self.y)
+
+    @property
+    def distance(self):
+        return math.sqrt(self.x ** 2 + self.y ** 2)
