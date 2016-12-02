@@ -1,5 +1,43 @@
 import math
+import operator
 from functools import total_ordering
+
+
+LETTERS = [x for x in 'abcdefghijklmnopqrstuvwxyz']
+VOWELS = {'a', 'e', 'i', 'o', 'u'}
+CONSONANTS = set(x for x in LETTERS if x not in VOWELS)
+
+
+def mul(lst):
+    """Like sum(), but for multiplication."""
+    return reduce(operator.mul, lst, 1)
+
+
+def factors(n):
+    """Returns the factors of n."""
+    return sorted(
+        x for tup in (
+            [i, n//i] for i in range(1, int(n**0.5) + 1)
+            if n % i == 0)
+        for x in tup)
+
+
+def primes(n):
+    """Returns the sorted list of primes in the range [2, n]"""
+    limit = n + 1
+    not_prime = set()
+    primes = []
+
+    for i in range(2, limit):
+        if i in not_prime:
+            continue
+
+        for f in range(i*2, limit, i):
+            not_prime.add(f)
+
+        primes.append(i)
+
+    return primes
 
 
 @total_ordering
