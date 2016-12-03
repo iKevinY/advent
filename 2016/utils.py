@@ -10,14 +10,20 @@ CONSONANTS = set(x for x in LETTERS if x not in VOWELS)
 
 def mul(lst):
     """Like sum(), but for multiplication."""
-    return reduce(operator.mul, lst, 1)
+    return reduce(operator.mul, lst, 1)  # NOQA
+
+
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
 
 
 def factors(n):
     """Returns the factors of n."""
     return sorted(
         x for tup in (
-            [i, n//i] for i in range(1, int(n**0.5) + 1)
+            [i, n // i] for i in range(1, int(n ** 0.5) + 1)
             if n % i == 0)
         for x in tup)
 
@@ -48,7 +54,7 @@ def _eratosthenes(n):
             yield i
 
             # Mark factors as non-prime
-            for n in xrange(i * i, n, i):
+            for n in xrange(i * i, n, i):  # NOQA
                 _primes[n] = False
 
 
