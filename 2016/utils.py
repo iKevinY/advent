@@ -22,22 +22,39 @@ def factors(n):
         for x in tup)
 
 
+def memoize(f):
+    """Simple dictionary-based memoization decorator"""
+    cache = {}
+
+    def _mem_fn(*args):
+        if args not in cache:
+            cache[args] = f(*args)
+        return cache[args]
+
+    _mem_fn.cache = cache
+    return _mem_fn
+
+
+def _eratosthenes(n):
+    """http://stackoverflow.com/a/3941967/239076"""
+    # Initialize list of primes
+    _primes = [True] * n
+
+    # Set 0 and 1 to non-prime
+    _primes[0] = _primes[1] = False
+
+    for i, is_prime in enumerate(_primes):
+        if is_prime:
+            yield i
+
+            # Mark factors as non-prime
+            for n in xrange(i * i, n, i):
+                _primes[n] = False
+
+
 def primes(n):
-    """Returns the sorted list of primes in the range [2, n]"""
-    limit = n + 1
-    not_prime = set()
-    primes = []
-
-    for i in range(2, limit):
-        if i in not_prime:
-            continue
-
-        for f in range(i*2, limit, i):
-            not_prime.add(f)
-
-        primes.append(i)
-
-    return primes
+    """Return a list of primes from [2, n)"""
+    return list(_eratosthenes(n))
 
 
 @total_ordering
