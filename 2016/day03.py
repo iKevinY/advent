@@ -2,8 +2,9 @@ import fileinput
 from utils import chunks
 
 
-def possible_tri(t):
-    return (t[0] + t[1] > t[2]) and (t[0] + t[2] > t[1]) and (t[1] + t[2] > t[0])
+def possible_tri(tri):
+    t = sorted(tri)
+    return t[0] + t[1] > t[2]
 
 
 triangles = []
