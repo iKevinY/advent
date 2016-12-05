@@ -3,6 +3,8 @@ from hashlib import md5
 
 door_id = fileinput.input()[0].strip()
 
+print "Using door ID: %s" % door_id
+
 old_password = ''
 new_password = [None for _ in range(8)]
 
