@@ -2,6 +2,8 @@ import re
 import fileinput
 from collections import Counter
 
+from utils import parse_line
+
 
 def decrypt(c, n):
     if c == '-':
@@ -14,7 +16,7 @@ total_sector_id = 0
 north_pole_sector_id = None
 
 for line in fileinput.input():
-    name, sector, checksum = re.match(r'(\S+)-(\d+)\[(\w{5})\]', line).groups()
+    name, sector, checksum = parse_line(line, r'(\S+)-(\d+)\[(\w{5})\]')
     sector = int(sector)
 
     real_name = ''.join(decrypt(c, sector) for c in name)

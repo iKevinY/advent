@@ -1,3 +1,4 @@
+import re
 import math
 import operator
 from functools import total_ordering
@@ -6,6 +7,10 @@ from functools import total_ordering
 LETTERS = [x for x in 'abcdefghijklmnopqrstuvwxyz']
 VOWELS = {'a', 'e', 'i', 'o', 'u'}
 CONSONANTS = set(x for x in LETTERS if x not in VOWELS)
+
+
+def parse_line(line, regex):
+    return re.match(regex, line).groups()
 
 
 def mul(lst):
