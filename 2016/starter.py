@@ -14,10 +14,16 @@ from utils import parse_line, mul, factors, memoize, primes, Point  # NOQA
 # combinations('ABCD', 2)                     AB AC AD BC BD CD
 # combinations_with_replacement('ABCD', 2)    AA AB AC AD BB BC BD CC CD DD
 
+total = 0
+result = []
+
 for i, line in enumerate(fileinput.input()):
     line = line.strip()
 
     # data = [x for x in line.split(', ')]
     # data = [x for x in line]
     # data = [int(x) for x in line.split()]
-    # data = parse_line(line, r'')
+    data = parse_line(line, r'')
+
+    if i == 0:
+        print(data)
