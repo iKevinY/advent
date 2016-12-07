@@ -9,7 +9,7 @@ VOWELS = {'a', 'e', 'i', 'o', 'u'}
 CONSONANTS = set(x for x in LETTERS if x not in VOWELS)
 
 
-def parse_line(line, regex):
+def parse_line(regex, line):
     return re.match(regex, line).groups()
 
 

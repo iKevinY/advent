@@ -23,7 +23,7 @@ for i, line in enumerate(fileinput.input()):
     # data = [x for x in line.split(', ')]
     # data = [x for x in line]
     # data = [int(x) for x in line.split()]
-    data = parse_line(line, r'')
+    data = parse_line(r'', line)
 
     if i == 0:
         print(data)

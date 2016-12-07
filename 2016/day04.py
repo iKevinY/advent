@@ -16,7 +16,7 @@ total_sector_id = 0
 north_pole_sector_id = None
 
 for line in fileinput.input():
-    name, sector, checksum = parse_line(line, r'(\S+)-(\d+)\[(\w{5})\]')
+    name, sector, checksum = parse_line(r'(\S+)-(\d+)\[(\w{5})\]', line)
     sector = int(sector)
 
     real_name = ''.join(decrypt(c, sector) for c in name)
