@@ -31,18 +31,13 @@ for line in fileinput.input():
         if not any(is_abba(h) for h in hypernets):
             tls_ips += 1
 
-    abas = set()
-
     for seq in sequences:
-        for aba in find_abas(seq):
-            abas.add(aba)
+        for a, b in find_abas(seq):
+            bab = b + a + b
 
-    for aba in abas:
-        bab = aba[1] + aba[0] + aba[1]
-
-        if any(bab in h for h in hypernets):
-            ssl_ips += 1
-            break
+            if any(bab in h for h in hypernets):
+                ssl_ips += 1
+                break
 
 print "Number of TLS IPs: %i" % tls_ips
 print "Number of SSL IPs: %i" % ssl_ips
