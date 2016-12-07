@@ -22,10 +22,10 @@ tls_ips = 0
 ssl_ips = 0
 
 for line in fileinput.input():
-    line = line.strip()
+    runs = re.findall(r'(\w+)', line.strip())
 
-    sequences = set(re.findall(r'\](\w+)\[?', line)) | set(re.findall(r'\]?(\w+)\[', line))
-    hypernets = set(re.findall(r'\[(\w+)\]', line))
+    sequences = runs[0::2]
+    hypernets = runs[1::2]
 
     if any(is_abba(s) for s in sequences):
         if not any(is_abba(h) for h in hypernets):
