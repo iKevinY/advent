@@ -20,6 +20,10 @@ def parse_line(regex, line):
     return ret
 
 
+def new_table(val, width, height):
+    return [[val for _ in range(width)] for _ in range(height)]
+
+
 def mul(lst):
     """Like sum(), but for multiplication."""
     return reduce(operator.mul, lst, 1)  # NOQA

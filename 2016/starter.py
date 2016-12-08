@@ -6,7 +6,7 @@ import fileinput
 from collections import Counter  # NOQA
 from itertools import product, permutations, combinations, combinations_with_replacement  # NOQA
 
-from utils import parse_line, mul, factors, memoize, primes, Point  # NOQA
+from utils import parse_line, mul, factors, memoize, primes, new_table, Point  # NOQA
 
 # Itertools Functions:
 # product('ABCD', repeat=2)                   AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD
@@ -16,6 +16,7 @@ from utils import parse_line, mul, factors, memoize, primes, Point  # NOQA
 
 total = 0
 result = []
+table = new_table(None, width=2, height=4)
 
 for i, line in enumerate(fileinput.input()):
     line = line.strip()
