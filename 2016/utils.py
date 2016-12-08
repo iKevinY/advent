@@ -10,7 +10,14 @@ CONSONANTS = set(x for x in LETTERS if x not in VOWELS)
 
 
 def parse_line(regex, line):
-    return re.match(regex, line).groups()
+    ret = []
+    for match in re.match(regex, line).groups():
+        try:
+            ret.append(int(match))
+        except ValueError:
+            ret.append(match)
+
+    return ret
 
 
 def mul(lst):
