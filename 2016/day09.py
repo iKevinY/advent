@@ -5,28 +5,28 @@ marker_re = re.compile(r'(\d+)x(\d+)')
 
 
 def decompressed_len(data, improved=False):
+    if not re.findall(marker_re, data):
+        return len(data)
+
     length = 0
 
-    while re.findall(marker_re, data):
-        take, repeat = (int(x) for x in re.findall(marker_re, data)[0])
+    take, repeat = (int(x) for x in re.findall(marker_re, data)[0])
 
-        # Remove any text before the first marker
-        length += data.index('(')
+    # Find start and end indices of first marker
+    start = data.index('(')
+    end = data.index(')')
 
-        # Strip the marker
-        end = data.index(')')
-        data = data[end+1:]
+    length += start
 
-        to_repeat = data[:take]
+    data = data[end+1:]
+    to_repeat = data[:take]
 
-        if '(' in to_repeat and improved:
-            length += (decompressed_len(to_repeat, improved=True) * repeat)
-        else:
-            length += take * repeat
+    if '(' in to_repeat and improved:
+        length += decompressed_len(to_repeat, improved) * repeat
+    else:
+        length += take * repeat
 
-        data = data[take:]
-
-    return length + len(data)
+    return length + decompressed_len(data[take:], improved)
 
 
 payload = fileinput.input()[0].strip()
