@@ -3,16 +3,14 @@ import fileinput
 from collections import defaultdict
 from utils import parse_line, mul
 
-
 BOTS = defaultdict(list)
 OUTPUTS = defaultdict(list)
+INSTRUCTIONS = [line.strip() for line in fileinput.input()]
 
-inst = [line.strip() for line in fileinput.input()]
-
-while inst:
+while INSTRUCTIONS:
     temp = []
 
-    for line in inst:
+    for line in INSTRUCTIONS:
         if 'value' in line:
             val, bot = [int(x) for x in re.findall(r'(\d+)', line)]
             BOTS[bot].append(val)
@@ -30,17 +28,10 @@ while inst:
             l, h = sorted(BOTS[bot][:2])
             BOTS[bot] = []
 
-            if low_t == 'bot':
-                BOTS[low].append(l)
-            else:
-                OUTPUTS[low].append(l)
+            (BOTS if low_t == 'bot' else OUTPUTS)[low].append(l)
+            (BOTS if high_t == 'bot' else OUTPUTS)[high].append(h)
 
-            if high_t == 'bot':
-                BOTS[high].append(h)
-            else:
-                OUTPUTS[high].append(h)
-
-    inst = temp
+    INSTRUCTIONS = temp
     temp = []
 
 product = mul(OUTPUTS[i][0] for i in range(3))
