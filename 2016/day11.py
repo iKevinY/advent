@@ -3,17 +3,14 @@ import fileinput
 from itertools import combinations
 
 
-def complete(state):
-    return all(f == 3 for f in state)
-
-
 def valid(state):
+    """Returns whether the current state is valid or not."""
     gens = set(state[::2])
     for i, floor in enumerate(state):
         # Element is a chip if it has an odd index
         if i % 2 == 1:
-            # Its matching generator is on the same floor, so it's fine
-            if state[i-1] == floor:
+            # Chip's matching generator is on the same floor
+            if state[i - 1] == floor:
                 continue
 
             # There is another generator on the floor
@@ -24,14 +21,12 @@ def valid(state):
 
 
 def ordered(state):
-    substate = sorted(zip(state[::2], state[1::2]))
-    return tuple(item for subl in substate for item in subl)
+    """Returns an ordered version of the state (to improve node pruning)."""
+    sorted_state = sorted(zip(state[::2], state[1::2]))
+    return tuple(item for subl in sorted_state for item in subl)
 
 
 def solve(state, start_floor=0):
-    if start_floor == 3 and complete(state):
-        return 0
-
     horizon = [(start_floor, state)]
     steps = 0
     seen = set()
@@ -43,7 +38,7 @@ def solve(state, start_floor=0):
             can_move = [i for i, f in enumerate(state) if f == floor]
             moves = []
 
-            if floor < 3:
+            if floor < TOP_FLOOR:
                 moves.extend([(2, floor + 1), (1, floor + 1)])
 
             if floor > 0:
@@ -65,7 +60,8 @@ def solve(state, start_floor=0):
                 for move in combinations(can_move, n):
                     next_state = tuple(new_floor if i in move else f for i, f in enumerate(state))
 
-                    if complete(next_state):
+                    # All items are on the top floor, so we're done
+                    if all(f == TOP_FLOOR for f in next_state):
                         return steps + 1
 
                     if valid(next_state) and (new_floor, ordered(next_state)) not in seen:
@@ -81,6 +77,7 @@ def solve(state, start_floor=0):
         steps += 1
 
 
+TOP_FLOOR = None
 generators = {}
 microchips = {}
 
@@ -89,6 +86,8 @@ for i, line in enumerate(fileinput.input()):
         generators[gen] = i
     for chip in re.findall(r'(\w+)-compatible microchip', line):
         microchips[chip] = i
+
+    TOP_FLOOR = i
 
 
 STATE = []
@@ -102,4 +101,4 @@ STATE = tuple(STATE)
 print "Minimum number of steps:", solve(STATE)
 
 STATE = tuple(list(STATE) + [0, 0, 0, 0])
-print "With four new objects:", solve(STATE)
+print "Including 4 new objects:", solve(STATE)
