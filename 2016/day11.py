@@ -23,6 +23,10 @@ def valid(state):
     return True
 
 
+def ordered(state):
+    substate = sorted(zip(state[::2], state[1::2]))
+    return tuple(item for subl in substate for item in subl)
+
 
 def solve(state, start_floor=0):
     if start_floor == 3 and complete(state):
@@ -43,7 +47,9 @@ def solve(state, start_floor=0):
                 moves.extend([(2, floor + 1), (1, floor + 1)])
 
             if floor > 0:
-                moves.extend([(1, floor - 1), (2, floor - 1)])
+                # Don't move downstairs if the floors below are empty
+                if any(f < floor for f in state):
+                    moves.extend([(1, floor - 1), (2, floor - 1)])
 
             moved_two_up = False
             moved_one_down = False
@@ -62,10 +68,9 @@ def solve(state, start_floor=0):
                     if complete(next_state):
                         return steps + 1
 
-                    if valid(next_state) and (new_floor, next_state) not in seen:
-                        pair = (new_floor, next_state)
-                        new_horizon.append(pair)
-                        seen.add(pair)
+                    if valid(next_state) and (new_floor, ordered(next_state)) not in seen:
+                        new_horizon.append((new_floor, next_state))
+                        seen.add((new_floor, ordered(next_state)))
 
                         if n == 2 and new_floor > floor:
                             moved_two_up = True
