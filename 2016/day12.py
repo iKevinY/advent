@@ -1,7 +1,14 @@
 import fileinput
 
 
-def simulate(program, a=0, b=0, c=0, d=0):
+def reg_or_val(regs, x):
+    try:
+        return int(x)
+    except ValueError:
+        return regs[x]
+
+
+def emulate(program, a=0, b=0, c=0, d=0):
     pc = 0
     regs = {'a': a, 'b': b, 'c': c, 'd': d}
 
@@ -9,16 +16,10 @@ def simulate(program, a=0, b=0, c=0, d=0):
         if pc >= len(program):
             return regs
 
-        inst = program[pc].split()
-
-        if len(inst) == 2:
-            cmd, x = inst
-            y = None
-        else:
-            cmd, x, y = inst
+        cmd, x, y = program[pc]
 
         if cmd == 'cpy':
-            regs[y] = int(x) if x.isdigit() else regs[x]
+            regs[y] = reg_or_val(regs, x)
 
         elif cmd == 'inc':
             regs[x] += 1
@@ -27,19 +28,21 @@ def simulate(program, a=0, b=0, c=0, d=0):
             regs[x] -= 1
 
         elif cmd == 'jnz':
-            x = int(x) if x.isdigit() else regs[x]
+            x = reg_or_val(regs, x)
 
-            if x == 0:
-                pc += 1
-                continue
-            else:
+            if x != 0:
                 pc += int(y)
                 continue
 
         pc += 1
 
 
-PROGRAM = [line.strip() for line in fileinput.input()]
+PROGRAM = []
 
-print "Value in register a:", simulate(PROGRAM)['a']
-print "When setting c to 1:", simulate(PROGRAM, c=1)['a']
+for line in fileinput.input():
+    # Add null argument to pad inc/dec instructions
+    instruction = line + ' null'
+    PROGRAM.append(instruction.split()[:3])
+
+print "Value in register a:", emulate(PROGRAM)['a']
+print "When setting c to 1:", emulate(PROGRAM, c=1)['a']
