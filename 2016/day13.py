@@ -3,9 +3,9 @@ import fileinput
 INPUT = int(fileinput.input()[0])
 
 
-def is_open(x, y, input=INPUT):
+def is_open(x, y, seed=INPUT):
     """Open space if number of 1 bits is even, else wall."""
-    num = (x * x) + (3 * x) + (2 * x * y) + y + (y * y) + input
+    num = (x * x) + (3 * x) + (2 * x * y) + y + (y * y) + seed
     return bin(num)[2:].count('1') % 2 == 0
 
 
