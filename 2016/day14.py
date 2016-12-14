@@ -8,7 +8,7 @@ from utils import memoize
 
 @memoize
 def salty_md5(salt, i):
-    return md5(salt + str(i)).hexdigest()
+    return md5('{}{}'.format(salt, i)).hexdigest()
 
 
 @memoize
@@ -27,29 +27,34 @@ def first_triple(s):
             return a
 
 
-def all_quintuplets(s):
+def all_quintuples(s):
     for i in range(len(s) - 4):
         a, b, c, d, e = s[i:i+5]
         if a == b == c == d == e:
             yield a
 
 
-def find_pad_key_64(salt, hash_fn):
+def find_64th_pad_key(salt, hash_fn):
     valid_keys = 0
-    quintuplets = defaultdict(set)
+    triples = {}
+    quintuples = defaultdict(set)
     i = 0
 
     while True:
         digest = hash_fn(salt, i)
+        triple = first_triple(digest)
 
-        for quint in all_quintuplets(digest):
-            quintuplets[i].add(quint)
+        if triple is not None:
+            triples[i] = triple
 
-        if i >= 1000:
+            for quint in all_quintuples(digest):
+                quintuples[i].add(quint)
+
+        if (i - 1000) in triples:
             n = i - 1000
-            triple = first_triple(hash_fn(salt, n))
+            triple = triples[n]
             for j in range(n + 1, n + 1001):
-                if triple in quintuplets[j]:
+                if triple in quintuples[j]:
                     valid_keys += 1
                     sys.stdout.write('.')
                     sys.stdout.flush()
@@ -64,6 +69,5 @@ def find_pad_key_64(salt, hash_fn):
 
 if __name__ == "__main__":
     SALT = fileinput.input()[0].strip()
-
-    print "Index of 64th one-time pad key", find_pad_key_64(SALT, salty_md5)
-    print "Index of key-stretched pad key", find_pad_key_64(SALT, stretched_md5)
+    print "Index of 64th one-time pad key", find_64th_pad_key(SALT, salty_md5)
+    print "Index of key-stretched pad key", find_64th_pad_key(SALT, stretched_md5)
