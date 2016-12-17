@@ -1,5 +1,4 @@
 import fileinput
-from collections import namedtuple
 
 DIRS = {
     "^": (0, 1),
@@ -14,7 +13,7 @@ def visit_houses(path):
         yield house
         house = tuple(map(sum, zip(house, DIRS[c])))
 
-path = fileinput.input()[0].strip())
+path = fileinput.input()[0].strip()
 
 year_1_houses = set(visit_houses(path))
 year_2_houses = set(visit_houses(path[::2])) | set(visit_houses(path[1::2]))

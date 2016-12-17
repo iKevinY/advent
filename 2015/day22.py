@@ -152,32 +152,34 @@ def boss_fight(player, boss, spell_order, hard_mode=False):
 # for line in fileinput.input():
 #     boss_data.append(int(line.split(': ')[1]))
 
-MOST_EFFICIENT = sys.maxint
-
 # boss = Character('BOSS', 13, 0, 8, 0)
 # player = Character('iKevinY', 10, 250, 0, 0)  # 50HP, 500MP
 # boss_fight(player, boss, [SPELLS[3], SPELLS[0]])
 
 # sys.exit()
 
-for n in range(9, 12):
-    found = False
-    for so in itertools.product(SPELLS, repeat=n):
-        if sum(s.cost for s in so) > MOST_EFFICIENT:
-            continue
+def simulate(hard_mode):
+    most_efficient = sys.maxint
 
-        boss = Character('BOSS', 55, 0, 8, 0)  # 55hp, 8dmg INPUT
-        player = Character('iKevinY', 50, 500, 0, 0)  # 50HP, 500MP
+    for n in range(9, 12):
+        found = False
+        for so in itertools.product(SPELLS, repeat=n):
+            if sum(s.cost for s in so) > most_efficient:
+                continue
 
-        # boss = Character('BOSS', 13, 0, 8, 0)
-        # player = Character('iKevinY', 10, 250, 0, 0)  # 50HP, 500MP
-        a = boss_fight(player, boss, so, hard_mode=True)
+            boss = Character('BOSS', 55, 0, 8, 0)  # 55hp, 8dmg INPUT
+            player = Character('iKevinY', 50, 500, 0, 0)  # 50HP, 500MP
 
-        if a < MOST_EFFICIENT:
-            MOST_EFFICIENT = a
-            found = True
+            # boss = Character('BOSS', 13, 0, 8, 0)
+            # player = Character('iKevinY', 10, 250, 0, 0)  # 50HP, 500MP
+            a = boss_fight(player, boss, so, hard_mode)
 
-    if found:
-        break
+            if a < most_efficient:
+                most_efficient = a
+                found = True
 
-print 'Most efficient MP: %i' % MOST_EFFICIENT
+        if found:
+            return most_efficient
+
+print 'Most efficient MP on easy mode: %i' % simulate(hard_mode=False)
+print 'Most efficient MP on hard mode: %i' % simulate(hard_mode=True)
