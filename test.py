@@ -9,18 +9,28 @@ import resource
 import subprocess
 
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+
+
 def clock():
     return resource.getrusage(resource.RUSAGE_CHILDREN)[0]
 
 
 def format_time(timespan):
     """Formats the timespan in a human readable format"""
-    if timespan >= 10.0:
-        return '\033[91m%.3g s\033[0m' % timespan
-    elif timespan >= 1.0:
-        return '\033[93m%.3g s\033[0m' % timespan
+    if timespan >= 1.0:
+        return '{}{:.3g} s{}'.format(
+            bcolors.FAIL if timespan >= 10 else bcolors.WARNING,
+            timespan,
+            bcolors.ENDC)
     else:
-        return '%.3g ms' % (timespan * 1e3)
+        return '{:.3g} ms'.format(timespan * 1e3)
 
 
 def check_solution(program, input_file, output_file):
@@ -34,9 +44,9 @@ def check_solution(program, input_file, output_file):
     with open(output_file) as f:
         for line in f:
             if line.strip() not in stdout:
-                return False, cpu_usr
+                return False, stdout, cpu_usr
         else:
-            return True, cpu_usr
+            return True, stdout, cpu_usr
 
 
 def main():
@@ -59,8 +69,16 @@ def main():
             output_file = '%s/outputs/%02i.txt' % (year, day)
 
             if os.path.exists(output_file):
-                valid, cpu_usr = check_solution(program, input_file, output_file)
-                print '{} {} Day {:02} ({})'.format('✓' if valid else '✗', year, day, format_time(cpu_usr))
+                valid, stdout, cpu_usr = check_solution(program, input_file, output_file)
+                print '{}{}{} {} Day {:02} ({})'.format(
+                    bcolors.OKGREEN if valid else bcolors.FAIL,
+                    '✓' if valid else '✗',
+                    bcolors.ENDC,
+                    year,
+                    day,
+                    format_time(cpu_usr),
+                )
+                print stdout
 
                 if not valid:
                     exit_code = 1
