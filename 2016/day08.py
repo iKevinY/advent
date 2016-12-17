@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import sys
-import time
+# import sys
+# import time
 import fileinput
 
 from utils import parse_line
@@ -10,7 +10,7 @@ HEIGHT = 6
 SCREEN = [[False for _ in range(WIDTH)] for _ in range(HEIGHT)]
 
 # Make space for animated output
-print '\n' * HEIGHT
+# print '\n' * HEIGHT
 
 for line in fileinput.input():
     if line.startswith('rect'):
@@ -34,11 +34,16 @@ for line in fileinput.input():
                 SCREEN[(offset+i) % HEIGHT][n] = x
 
 
-    sys.stdout.write('\033[F' * HEIGHT)
+    # sys.stdout.write('\033[F' * HEIGHT)
 
-    for row in SCREEN:
-        print ''.join('█' if x else ' ' for x in row)
+    # for row in SCREEN:
+    #     print ''.join('█' if x else ' ' for x in row)
 
-    time.sleep(0.02)
+    # time.sleep(0.02)
+
+
+print ''
+for row in SCREEN:
+    print ''.join('█' if x else ' ' for x in row)
 
 print "\nNumber of lit pixels: %i" % sum(sum(row) for row in SCREEN)
