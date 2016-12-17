@@ -15,10 +15,12 @@ def clock():
 
 def human_time(timespan):
     """Formats the timespan in a human readable format"""
-    if timespan >= 1.0:
-        return '%.*g s' % (3, timespan * 1.0)
+    if timespan >= 10.0:
+        return '\033[91m%.3g s\033[0m' % timespan
+    elif timespan >= 2.0:
+        return '\033[93m%.3g s\033[0m' % (timespan * 1.0)
     else:
-        return '%.*g ms' % (3, timespan * 1e3)
+        return '%.3g ms' % (timespan * 1e3)
 
 
 def check_solution(program, input_file, output_file):
@@ -37,6 +39,10 @@ def check_solution(program, input_file, output_file):
             return True, cpu_usr
 
 
+def mark(valid):
+    return '\033[92m✓\033[0m' if valid else '\033[91m✗\033[0m'
+
+
 def main():
     exit_code = 0
 
@@ -47,7 +53,7 @@ def main():
 
         if os.path.exists(output_file):
             valid, cpu_usr = check_solution(program, input_file, output_file)
-            print '{} Day {:02} ({})'.format('✓' if valid else '✗', day, human_time(cpu_usr))
+            print '{} Day {:02} ({})'.format(mark(valid), day, human_time(cpu_usr))
 
             if not valid:
                 exit_code = 1
