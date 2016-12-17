@@ -3,8 +3,6 @@ from hashlib import md5
 
 door_id = fileinput.input()[0].strip()
 
-print "Using door ID: %s" % door_id
-
 pass_1 = ''
 pass_2 = [None for _ in range(8)]
 
@@ -14,7 +12,7 @@ while len(pass_1) < 8 or None in pass_2:
     digest = md5(door_id + str(i)).hexdigest()
 
     if digest.startswith('00000'):
-        print "Hash found! %s (%08i)" % (digest, i)
+        # print "Hash found! %s (%08i)" % (digest, i)
 
         if len(pass_1) < 8:
             pass_1 += digest[5]
