@@ -42,17 +42,28 @@ def check_solution(program, input_file, output_file):
 def main():
     exit_code = 0
 
-    for program in glob.glob('2016/day*.py'):
-        day = int(re.findall(r'(\d+).py', program)[0])
-        input_file = '2016/inputs/%02i.txt' % day
-        output_file = '2016/outputs/%02i.txt' % day
+    if len(sys.argv) > 1:
+        years = [sys.argv[1]]
+    else:
+        years = ['2015', '2016']
 
-        if os.path.exists(output_file):
-            valid, cpu_usr = check_solution(program, input_file, output_file)
-            print '{} Day {:02} ({})'.format('✓' if valid else '✗', day, format_time(cpu_usr))
+    for year in years:
+        if len(sys.argv) > 2:
+            programs = glob.glob('%s/day%02i.py' % (year, int(sys.argv[2])))
+        else:
+            programs = glob.glob('%s/day*.py' % year)
 
-            if not valid:
-                exit_code = 1
+        for program in programs:
+            day = int(re.findall(r'(\d+).py', program)[0])
+            input_file = '%s/inputs/%02i.txt' % (year, day)
+            output_file = '%s/outputs/%02i.txt' % (year, day)
+
+            if os.path.exists(output_file):
+                valid, cpu_usr = check_solution(program, input_file, output_file)
+                print '{} {} Day {:02} ({})'.format('✓' if valid else '✗', year, day, format_time(cpu_usr))
+
+                if not valid:
+                    exit_code = 1
 
     sys.exit(exit_code)
 
