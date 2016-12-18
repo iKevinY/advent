@@ -14,23 +14,10 @@ def predict_next_row(row):
     next_row = []
 
     for i in range(len(row)):
-        a, b, c = (is_safe(row, x) for x in range(i-1, i+2))
-        next_row.append(predict_safe(a, b, c))
+        a, c = is_safe(row, i - 1), is_safe(row, i + 1)
+        next_row.append(not (a ^ c))
 
     return tuple(next_row)
-
-
-def predict_safe(a, b, c):
-    if a and b and not c:
-        return False
-    elif not a and b and c:
-        return False
-    elif a and not b and not c:
-        return False
-    elif not a and not b and c:
-        return False
-
-    return True
 
 
 if __name__ == '__main__':
