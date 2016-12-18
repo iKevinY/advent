@@ -1,23 +1,17 @@
 import fileinput
 
 
-def is_safe(row, x):
+def is_safe(row, i):
     """Helper function to read out-of-bounds tiles as safe."""
-    if x < 0 or x >= len(row):
-        return True
+    if 0 <= i < len(row):
+        return row[i]
 
-    return row[x]
+    return True
 
 
 def predict_next_row(row):
     """Given a row, returns the predicted following row."""
-    next_row = []
-
-    for i in range(len(row)):
-        a, c = is_safe(row, i - 1), is_safe(row, i + 1)
-        next_row.append(not (a ^ c))
-
-    return tuple(next_row)
+    return [not (is_safe(row, i-1) ^ is_safe(row, i+1)) for i in range(len(row))]
 
 
 if __name__ == '__main__':
