@@ -17,7 +17,7 @@ def predict_next_row(row):
 if __name__ == '__main__':
     # Represent traps as True and safe tiles as False.
     # The number of safe tiles per row is len(row) - sum(row).
-    row = [True if c == '^' else False for c in fileinput.input()[0].strip()]
+    row = [c == '^' for c in fileinput.input()[0].strip()]
     row_len = len(row)
     safe_tiles = row_len - sum(row)
 
