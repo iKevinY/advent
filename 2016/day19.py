@@ -1,28 +1,15 @@
 import fileinput
-
-
-class LinkedElf:
-    def __init__(self, num):
-        self.num = num
-        self.next = None
+from collections import deque
 
 
 def adjacent_elves(num_elves):
-    head = LinkedElf(1)
-    curr = head
+    elves = deque(range(1, num_elves + 1))
 
-    for i in range(2, num_elves + 1):
-        curr.next = LinkedElf(i)
-        curr = curr.next
+    while len(elves) > 1:
+        elves.rotate(-1)
+        elves.popleft()
 
-    curr.next = head
-    curr = head
-
-    while curr is not curr.next:
-        curr.next = curr.next.next
-        curr = curr.next
-
-    return curr.num
+    return elves[0]
 
 
 def circular_elves(num_elves):
