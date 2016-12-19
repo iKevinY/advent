@@ -13,24 +13,21 @@ def adjacent_elves(num_elves):
 
 
 def circular_elves(num_elves):
-    seen = set()
-    victim = num_elves // 2
+    left = deque(range(1, (num_elves // 2) + 1))
+    right = deque(range((num_elves // 2) + 1, num_elves + 1))
 
-    # Start with a double jump if number of elves is odd
-    double = (num_elves % 2) == 1
+    while len(left) + len(right) > 1:
+        # Remove the middle Elf in the circle
+        right.popleft()
 
-    while True:
-        seen.add(victim)
+        # Move an Elf from between deques
+        right.append(left.popleft())
 
-        if len(seen) == num_elves:
-            return victim + 1
+        # Rebalance the deques if uneven
+        if len(right) - len(left) == 2:
+            left.append(right.popleft())
 
-        for _ in range(2 if double else 1):
-            victim = (victim + 1) % num_elves
-            while victim in seen:
-                victim = (victim + 1) % num_elves
-
-        double = not double
+    return right[0]
 
 
 if __name__ == '__main__':
