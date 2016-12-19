@@ -52,36 +52,36 @@ def check_solution(program, input_file, output_file):
 def main():
     exit_code = 0
 
-    if len(sys.argv) > 1:
-        years = [sys.argv[1]]
+    if len(sys.argv) == 1:
+        print "Usage: ./test.py <year> [problem]"
+        sys.exit()
+
+    year = sys.argv[1]
+
+    if len(sys.argv) > 2:
+        programs = glob.glob('%s/day%02i.py' % (year, int(sys.argv[2])))
     else:
-        years = ['2015', '2016']
+        programs = glob.glob('%s/day*.py' % year)
 
-    for year in years:
-        if len(sys.argv) > 2:
-            programs = glob.glob('%s/day%02i.py' % (year, int(sys.argv[2])))
-        else:
-            programs = glob.glob('%s/day*.py' % year)
+    for program in programs:
+        day = int(re.findall(r'(\d+).py', program)[0])
+        input_file = '%s/inputs/%02i.txt' % (year, day)
+        output_file = '%s/outputs/%02i.txt' % (year, day)
 
-        for program in programs:
-            day = int(re.findall(r'(\d+).py', program)[0])
-            input_file = '%s/inputs/%02i.txt' % (year, day)
-            output_file = '%s/outputs/%02i.txt' % (year, day)
+        if os.path.exists(output_file):
+            valid, stdout, cpu_usr = check_solution(program, input_file, output_file)
+            print '{}{}{} {} Day {:02} ({})'.format(
+                bcolors.OKGREEN if valid else bcolors.FAIL,
+                '✓' if valid else '✗',
+                bcolors.ENDC,
+                year,
+                day,
+                format_time(cpu_usr),
+            )
+            print stdout
 
-            if os.path.exists(output_file):
-                valid, stdout, cpu_usr = check_solution(program, input_file, output_file)
-                print '{}{}{} {} Day {:02} ({})'.format(
-                    bcolors.OKGREEN if valid else bcolors.FAIL,
-                    '✓' if valid else '✗',
-                    bcolors.ENDC,
-                    year,
-                    day,
-                    format_time(cpu_usr),
-                )
-                print stdout
-
-                if not valid:
-                    exit_code = 1
+            if not valid:
+                exit_code = 1
 
     sys.exit(exit_code)
 
