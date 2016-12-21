@@ -8,7 +8,7 @@ def scramble(data, operations, unscramble=False):
     data = deque(data)
 
     if unscramble:
-        operations.reverse()
+        operations = reversed(operations)
 
     for line in operations:
         if line.startswith('swap position'):
