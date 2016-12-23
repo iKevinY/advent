@@ -93,5 +93,6 @@ for line in fileinput.input():
     instruction = line + ' null'
     PROGRAM.append(instruction.split()[:3])
 
+# Note: the actual input program computes f(n) = n! + 7708
 print "Value to send to safe:", emulate(PROGRAM, a=7)['a']
 print "Actual value for safe:", emulate(PROGRAM, a=12)['a']
