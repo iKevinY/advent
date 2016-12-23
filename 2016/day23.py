@@ -23,17 +23,17 @@ def emulate(program, a=0, b=0, c=0, d=0):
         cmd, x, y = program[pc]
 
         if cmd == 'cpy':
-            # Subroutines that look like this perform multiplication:
+            # The following instructions simply perform multiplication:
             #   cpy b c
             #   inc a
             #   dec c
             #   jnz c -2
             #   dec d
             #   jnz d -5
-            # Perform a lookahead and optimize it by doing the following:
+            # Perform a peephole optimization by doing the following:
             #   - Set a to b*d
             #   - Set c and d to 0.
-            #   - Move forward 5 instructions.
+            #   - Advance the PC by 5 instructions.
             next_cmds, next_regs = zip(*program[pc+1:pc+5])[0:2]
 
             if x.isalpha() and next_cmds == ('inc', 'dec', 'jnz', 'dec'):
