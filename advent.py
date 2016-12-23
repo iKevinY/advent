@@ -49,7 +49,7 @@ def check_solution(program, input_file, output_file):
             return True, stdout, cpu_usr
 
 
-def main():
+if __name__ == '__main__':
     exit_code = 0
 
     if len(sys.argv) == 1:
@@ -84,7 +84,3 @@ def main():
                 exit_code = 1
 
     sys.exit(exit_code)
-
-
-if __name__ == '__main__':
-    main()
