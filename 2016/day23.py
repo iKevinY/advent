@@ -16,24 +16,22 @@ def emulate(program, a=0, b=0, c=0, d=0):
     # Toggling instructions modifes the program, so operate on a copy instead.
     program = deepcopy(program)
 
-    while True:
-        if pc >= len(program):
-            return regs
-
+    while pc < len(program):
         cmd, x, y = program[pc]
 
         if cmd == 'cpy':
-            # The following instructions simply perform multiplication:
+            # The following set of instructions performs multiplication:
             #   cpy b c
             #   inc a
             #   dec c
             #   jnz c -2
             #   dec d
             #   jnz d -5
+            #
             # Perform a peephole optimization by doing the following:
             #   - Set a to b*d
             #   - Set c and d to 0.
-            #   - Advance the PC by 5 instructions.
+            #   - Advance the PC by 6 to jump past the instructions.
             next_cmds, next_regs = zip(*program[pc+1:pc+5])[0:2]
 
             if x.isalpha() and next_cmds == ('inc', 'dec', 'jnz', 'dec'):
@@ -42,10 +40,10 @@ def emulate(program, a=0, b=0, c=0, d=0):
                 regs[a] = regs[x] * regs[d]
                 regs[c] = 0
                 regs[d] = 0
-                pc += 5
+                pc += 6
                 continue
 
-            # Ignore copy instructions that try to copy a value into an
+            # Ignore cpy instructions that try to copy a value into an
             # immediate value (occurs when toggling instructions).
             if y.isalpha():
                 regs[y] = reg_or_val(regs, x)
@@ -64,26 +62,20 @@ def emulate(program, a=0, b=0, c=0, d=0):
                 continue
 
         elif cmd == 'tgl':
-            x = reg_or_val(regs, x)
-            to_toggle = pc + x
+            i = pc + reg_or_val(regs, x)
             try:
-                cng, nx, ny = program[to_toggle]
-            except:
-                pc += 1
-                continue
-
-            if ny == 'null':
-                if cng == 'inc':
-                    program[to_toggle][0] = 'dec'
-                else:
-                    program[to_toggle][0] = 'inc'
+                ncmd, nx, ny = program[i]
+            except IndexError:
+                pass
             else:
-                if cng == 'jnz':
-                    program[to_toggle][0] = 'cpy'
+                if ny == 'null':
+                    program[i][0] = 'dec' if ncmd == 'inc' else 'inc'
                 else:
-                    program[to_toggle][0] = 'jnz'
+                    program[i][0] = 'cpy' if ncmd == 'jnz' else 'jnz'
 
         pc += 1
+
+    return regs
 
 
 PROGRAM = []
