@@ -30,11 +30,9 @@ def a_star(grid, start, goal):
     already seen is valid so long as h(n) is admissible.
     """
 
-    frontier = []
+    frontier = [(0, start)]
     seen = set()
     cost_to = {start: 0}  # this is g(n)
-
-    heapq.heappush(frontier, (0, start))
 
     while frontier:
         _priority, (x, y) = heapq.heappop(frontier)
