@@ -1,5 +1,5 @@
 import fileinput
-from collections import deque
+import heapq
 from itertools import combinations, permutations
 
 DIRS = [
@@ -17,21 +17,45 @@ def valid(grid, x, y):
         return False
 
 
-def bfs(grid, start, goal):
-    horizon = deque([(start, 0)])
-    seen = set(start)
+def heuristic(a, b):
+    x1, y1 = a
+    x2, y2 = b
+    return abs(x1 - x2) + abs(y1 - y2)
 
-    while horizon:
-        (x, y), dst = horizon.pop()
+
+def a_star(grid, start, goal):
+    """
+    Returns the length of the shortest path, minimizing f(n) = g(n) + h(n)
+    as a search strategy. Using a closed set to skip over nodes that have
+    already seen is valid so long as h(n) is admissible.
+    """
+
+    frontier = []
+    seen = set()
+    cost_to = {start: 0}  # this is g(n)
+
+    heapq.heappush(frontier, (0, start))
+
+    while frontier:
+        _priority, (x, y) = heapq.heappop(frontier)
 
         if (x, y) == goal:
-            return dst
+            return cost_to[goal]
+
+        seen.add((x, y))
 
         for dx, dy in DIRS:
             nx, ny = x + dx, y + dy
-            if (nx, ny) not in seen and valid(grid, nx, ny):
-                horizon.appendleft(((nx, ny), dst + 1))
-                seen.add((nx, ny))
+
+            if (nx, ny) in seen or not valid(grid, nx, ny):
+                continue
+
+            new_dist = cost_to[x, y] + 1
+
+            if (nx, ny) not in cost_to or new_dist < cost_to[nx, ny]:
+                cost_to[nx, ny] = new_dist
+                priority = new_dist + heuristic(goal, (nx, ny))
+                heapq.heappush(frontier, (priority, (nx, ny)))
 
 
 def navigate(distances, path, complete=False):
@@ -59,7 +83,7 @@ if __name__ == '__main__':
     distances = {}
 
     for a, b in combinations(range(max(locations) + 1), 2):
-        distances[a, b] = distances[b, a] = bfs(grid, locations[a], locations[b])
+        distances[a, b] = distances[b, a] = a_star(grid, locations[a], locations[b])
 
     paths = list(permutations(range(1, max(locations) + 1)))
     print "Fewest steps to visit all numbers:", min(navigate(distances, path) for path in paths)
