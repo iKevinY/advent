@@ -1,7 +1,5 @@
 import fileinput
-import itertools
 import re
-import sys
 
 REPLACEMENTS = []
 ELECTRONS = []
@@ -18,90 +16,29 @@ for line in fileinput.input():
     else:
         MOLECULE = line.strip()
 
-print "Elements:", len(re.findall(r'[A-Z]', MOLECULE))
-print "Rn/Ar:", len(re.findall(r'Rn', MOLECULE)), "* 2"
-print "Y:", len(re.findall(r'Y', MOLECULE))
-
-# molecule = MOLECULE
-
-# reps = {m[1][::-1]: m[0][::-1]
-#         for m in REPLACEMENTS}
-
-# def rep(x):
-#     return reps[x.group()]
-
-# count = 0
-# while molecule != 'e':
-#     molecule = re.sub('|'.join(reps.keys()), rep, molecule, 1)
-#     count += 1
-
-# print(count)
-
-sys.exit()
-
-
-outs = set()
-
-def molefy(mole):
-    for old, new in REPLACEMENTS:
-        for pos in (m.start() for m in re.finditer(old, mole)):
-            new_string = mole[:pos] + new + mole[pos+len(old):]
-            yield new_string
-
-def delete(mole):
-    for old, new in REPLACEMENTS:
-        for pos in (m.start() for m in re.finditer(new, mole)):
-            new_string = mole[:pos] + old + mole[pos+len(new):]
-            yield new_string
 
 def replace(old, new, s):
-    for pos in (m.start() for m in re.finditer(new, s)):
-        yield "{}{}{}".format(s[:pos], old, s[pos+len(new):])
+    for pos in (m.start() for m in re.finditer(old, s)):
+        yield "{}{}{}".format(s[:pos], new, s[pos+len(old):])
 
 
-LOWEST = 100000
+single_replacements = set()
 
-def submol(m, i=1,):
-    if m in ELECTRONS:
-        LOWEST = min(LOWEST, i)
+for old, new in REPLACEMENTS:
+    if old in MOLECULE:
+        for new_mol in replace(old, new, MOLECULE):
+            single_replacements.add(new_mol)
 
-    for r in REPLACEMENTS:
-        if r[1] in m:
-            for x in replace(r[0], r[1], m):
-                submol(x, i+1)
+print "Distinct molecules after one replacement:", len(single_replacements)
 
 
-submol(MOLECULE)
-print LOWEST
+elements = len(re.findall(r'[A-Z]', MOLECULE))
+radon = len(re.findall(r'Rn', MOLECULE))
+yttrium = len(re.findall(r'Y', MOLECULE))
 
-sys.exit()
+# print "Elements:", elements
+# print "Rn/Ar:", radon, "* 2"
+# print "Y:", yttrium
+# print "|E| - (Rn + Ar) - 2*Y - 1 = n"
 
-iterations = 1
-mols = set()
-mols.add(MOLECULE)
-new_mols = set()
-# seen = set()
-
-while True:
-    iterations += 1
-    for m in mols:
-        for r in REPLACEMENTS:
-            if r[1] in m:
-                for x in replace(r[0], r[1], m):
-                    if x in ELECTRONS:
-                        print iterations
-                        sys.exit()
-
-                # if x not in seen:
-                    new_mols.add(x)
-                    # seen.add(x)
-
-    if len(new_mols) == 0:
-        sys.exit("BLALALLA")
-
-    mols = new_mols
-    new_mols = set()
-
-
-
-# print len(outs)
+print "Fewest steps from e to medicine:", elements - (2 * radon) - (2 * yttrium) - 1
