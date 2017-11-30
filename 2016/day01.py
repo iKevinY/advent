@@ -2,10 +2,10 @@ import fileinput
 from utils import Point
 
 DIRS = [
-    Point(1, 0),  # north
-    Point(0, 1),  # east
-    Point(-1, 0), # south
-    Point(0, -1)  # west
+    Point(0, 1),  # north
+    Point(1, 0),  # east
+    Point(0, -1), # south
+    Point(-1, 0)  # west
 ]
 
 seen = set()
