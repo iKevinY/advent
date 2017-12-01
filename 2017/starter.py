@@ -6,7 +6,8 @@ import fileinput
 from collections import Counter, deque, namedtuple  # NOQA
 from itertools import count, product, permutations, combinations, combinations_with_replacement  # NOQA
 
-from utils import parse_line, mul, factors, memoize, primes, new_table, Point, DIRS, DIRS_4, DIRS_8  # NOQA
+from utils import (parse_line, mul, factors, memoize, primes, new_table, md5, sha256  # NOQA
+    Point, DIRS, DIRS_4, DIRS_8)  # NOQA
 
 # Itertools Functions:
 # product('ABCD', repeat=2)                   AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD

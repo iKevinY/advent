@@ -1,5 +1,6 @@
 import re
 import math
+import hashlib
 import operator
 from functools import total_ordering
 
@@ -77,6 +78,18 @@ def _eratosthenes(n):
 def primes(n):
     """Return a list of primes from [2, n)"""
     return list(_eratosthenes(n))
+
+
+def md5(msg):
+    m = hashlib.md5()
+    m.update(msg)
+    return m.hexdigest()
+
+
+def sha256(msg):
+    s = hashlib.sha256()
+    s.update(msg)
+    return s.hexdigest()
 
 
 @total_ordering
