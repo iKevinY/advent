@@ -146,5 +146,5 @@ DIRS_8 = [
     Point(0, -1),   # S
     Point(-1, -1),  # SW
     Point(-1, 0),   # W
-    Point(-1, 0),   # NW
+    Point(-1, 1),   # NW
 ]
