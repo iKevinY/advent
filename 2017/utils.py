@@ -126,6 +126,9 @@ class Point:
     def __str__(self):
         return "({}, {})".format(self.x, self.y)
 
+    def __repr__(self):
+        return "Point({}, {})".format(self.x, self.y)
+
     def __hash__(self):
         return hash(tuple((self.x, self.y)))
 
