@@ -36,6 +36,10 @@ def chunks(l, n):
         yield l[i:i + n]
 
 
+def all_unique(lst):
+    return len(lst) == len(set(lst))
+
+
 def factors(n):
     """Returns the factors of n."""
     return sorted(

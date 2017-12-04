@@ -6,7 +6,7 @@ import fileinput
 from collections import Counter, deque, namedtuple  # NOQA
 from itertools import count, product, permutations, combinations, combinations_with_replacement  # NOQA
 
-from utils import (parse_line, mul, factors, memoize, primes, new_table, md5, sha256,  # NOQA
+from utils import (parse_line, mul, all_unique, factors, memoize, primes, new_table, md5, sha256,  # NOQA
     Point, DIRS, DIRS_4, DIRS_8)  # NOQA
 
 # Itertools Functions:
@@ -21,7 +21,6 @@ table = new_table(None, width=2, height=4)
 
 for i, line in enumerate(fileinput.input()):
     line = line.strip()
-
     data = parse_line(r'', line)
 
     if i == 0:
