@@ -22,10 +22,6 @@ table = new_table(None, width=2, height=4)
 for i, line in enumerate(fileinput.input()):
     line = line.strip()
 
-    # data = [x for x in line.split(', ')]
-    # data = [x for x in line]
-    # data = [int(x) for x in line.split()]
-    # data = re.findall(r'(\w+)', line)
     data = parse_line(r'', line)
 
     if i == 0:
