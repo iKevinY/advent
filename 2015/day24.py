@@ -1,6 +1,5 @@
 import fileinput
 import itertools
-from tqdm import tqdm
 
 PACKAGES = []
 
