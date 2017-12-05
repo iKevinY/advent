@@ -1,3 +1,12 @@
 language: python
 python: "2.7"
-script: ./advent.py 2017
+env:
+- AOC_YEAR=2015
+- AOC_YEAR=2016
+- AOC_YEAR=2017
+matrix:
+    fast_finish: true
+    allow_failures:
+    - env: AOC_YEAR="2015"
+    - env: AOC_YEAR="2016"
+script: ./advent.py $AOC_YEAR
