@@ -1,4 +1,3 @@
-import sys
 import re
 import fileinput
 
@@ -39,28 +38,44 @@ for d in DISCS.values():
 print 'Name of bottom program:', root.name
 
 
+BAD_WEIGHTS = {}
+
+
 def program_weight(node):
     if not node.aboves:
         return node.weight
 
     weights = [program_weight(a) for a in node.aboves]
 
-    # Since we're performing DFS, we are guaranteed to encounter the problem
-    # disc here first; therefore, we compute the correct answer and exit.
+    # Keep track of discs whose children have different weights
     if len(set(weights)) != 1:
-        for i, w in enumerate(weights):
-            if weights.count(w) == 1:
-                diff = w
-                wrong_disc = node.aboves[i].name
-            else:
-                same = w
-
-        proper_weight = DISCS[wrong_disc].weight + (same - diff)
-        print "Proper weight of `{}`: {}".format(wrong_disc, proper_weight)
-        sys.exit()
+        BAD_WEIGHTS[node.name] = weights
 
     return sum(weights) + node.weight
 
 
-# Initialize the recursion, which will also find the solution.
+# Seed `BAD_WEIGHTS`
 program_weight(root)
+
+# Traverse from root until the offending disc is found
+bad_disc = root
+while True:
+    for a in bad_disc.aboves:
+        if a.name in BAD_WEIGHTS:
+            bad_disc = a
+            break
+    else:
+        break
+
+# Determine the correct weight of the child disc
+weights = BAD_WEIGHTS[bad_disc.name]
+
+for i, w in enumerate(weights):
+    if weights.count(w) == 1:
+        diff = w
+        wrong_disc = bad_disc.aboves[i].name
+    else:
+        same = w
+
+proper_weight = DISCS[wrong_disc].weight + (same - diff)
+print "Proper weight of `{}`: {}".format(wrong_disc, proper_weight)
