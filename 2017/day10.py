@@ -46,4 +46,4 @@ for i in range(16):
 
     dense.append(res)
 
-print "Knot Hash of puzzle input:", ''.join(hex(x)[2:] for x in dense)
+print "Knot Hash of puzzle input:", ''.join('%02x' % x for x in dense)
