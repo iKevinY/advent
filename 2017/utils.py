@@ -96,6 +96,35 @@ def sha256(msg):
     return s.hexdigest()
 
 
+def knot_hash(msg):
+    lengths = [ord(x) for x in msg] + [17, 31, 73, 47, 23]
+    sparse = range(0, 256)
+    pos = 0
+    skip = 0
+
+    for _ in range(64):
+        for l in lengths:
+            for i in range(l // 2):
+                x = (pos + i) % len(sparse)
+                y = (pos + l - i - 1) % len(sparse)
+                sparse[x], sparse[y] = sparse[y], sparse[x]
+
+            pos = pos + l + skip % len(sparse)
+            skip += 1
+
+    sparse = sparse
+    dense = []
+
+    for i in range(16):
+        res = 0
+        for j in range(0, 16):
+            res ^= sparse[(i * 16) + j]
+
+        dense.append(res)
+
+    return ''.join('%02x' % x for x in dense)
+
+
 @total_ordering
 class Point:
     """Simple 2-dimensional point."""

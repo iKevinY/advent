@@ -6,7 +6,7 @@ import fileinput
 from collections import Counter, deque, namedtuple  # NOQA
 from itertools import count, product, permutations, combinations, combinations_with_replacement  # NOQA
 
-from utils import (parse_line, mul, all_unique, factors, memoize, primes, new_table, md5, sha256,  # NOQA
+from utils import (parse_line, mul, all_unique, factors, memoize, primes, new_table, md5, sha256, knot_hash,  # NOQA
     Point, DIRS, DIRS_4, DIRS_8)  # NOQA
 
 # Itertools Functions:
