@@ -3,7 +3,7 @@ import sys  # NOQA
 import re  # NOQA
 import math  # NOQA
 import fileinput
-from collections import Counter, deque, namedtuple  # NOQA
+from collections import Counter, defaultdict, deque, namedtuple  # NOQA
 from itertools import count, product, permutations, combinations, combinations_with_replacement  # NOQA
 
 from utils import (parse_line, mul, all_unique, factors, memoize, primes, new_table, md5, sha256, knot_hash,  # NOQA
