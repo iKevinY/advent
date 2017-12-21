@@ -44,7 +44,7 @@ def format_time(timespan):
 
 
 def check_solution(program, day, input_file, output_file):
-    with Halo(text='2017 Day {:02}'.format(day)):
+    with Halo(text='Day {:02}'.format(day)):
         cmd = ['python', program, input_file]
         start = clock()
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
@@ -81,11 +81,10 @@ if __name__ == '__main__':
 
         if os.path.exists(output_file):
             valid, stdout, cpu_usr = check_solution(program, day, input_file, output_file)
-            print '{}{}{} {} Day {:02} ({})'.format(
+            print '{}{}{} Day {:02} ({})'.format(
                 bcolors.OKGREEN if valid else bcolors.FAIL,
                 '✓' if valid else '✗',
                 bcolors.ENDC,
-                year,
                 day,
                 format_time(cpu_usr),
             )
