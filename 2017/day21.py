@@ -15,7 +15,7 @@ GRID = [
 RULES = {}
 
 for line in fileinput.input():
-    rule_in, rule_out = line.split(' => ')
+    rule_in, rule_out = line.strip().split(' => ')
 
     # Build all rule rotations and reflections
     grid = [list(x) for x in rule_in.split('/')]
