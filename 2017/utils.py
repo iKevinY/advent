@@ -25,6 +25,16 @@ def new_table(val, width, height):
     return [[val for _ in range(width)] for _ in range(height)]
 
 
+def transposed(matrix):
+    """Returns the transpose of the given matrix."""
+    return [list(r) for r in zip(*matrix)]
+
+
+def rotated(matrix):
+    """Returns the given matrix rotated 90 degrees clockwise."""
+    return [list(r) for r in zip(*matrix[::-1])]
+
+
 def mul(lst):
     """Like sum(), but for multiplication."""
     return reduce(operator.mul, lst, 1)  # NOQA
