@@ -8,6 +8,16 @@ import glob
 import resource
 import subprocess
 
+try:
+    from halo import Halo
+except ImportError:
+    # Use a noop context manager if Halo isn't installed
+    from contextlib import contextmanager
+
+    @contextmanager
+    def Halo(text):
+        yield
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -33,13 +43,14 @@ def format_time(timespan):
         return '{:.3g} ms'.format(timespan * 1e3)
 
 
-def check_solution(program, input_file, output_file):
-    cmd = ['python', program, input_file]
-    start = clock()
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    stdout = proc.communicate()[0]
-    end = clock()
-    cpu_usr = end - start
+def check_solution(program, day, input_file, output_file):
+    with Halo(text='2017 Day {:02}'.format(day)):
+        cmd = ['python', program, input_file]
+        start = clock()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+        stdout = proc.communicate()[0]
+        end = clock()
+        cpu_usr = end - start
 
     with open(output_file) as f:
         for line in f:
@@ -69,7 +80,7 @@ if __name__ == '__main__':
         output_file = '%s/outputs/%02i.txt' % (year, day)
 
         if os.path.exists(output_file):
-            valid, stdout, cpu_usr = check_solution(program, input_file, output_file)
+            valid, stdout, cpu_usr = check_solution(program, day, input_file, output_file)
             print '{}{}{} {} Day {:02} ({})'.format(
                 bcolors.OKGREEN if valid else bcolors.FAIL,
                 '✓' if valid else '✗',
