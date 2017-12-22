@@ -1,16 +1,12 @@
 import fileinput
+from collections import Counter
+
 from utils import new_table
 
 
 def lit_pixels(grid):
     return sum(sum(c == '#' for c in row) for row in grid)
 
-
-GRID = [
-    ['.', '#', '.'],
-    ['.', '.', '#'],
-    ['#', '#', '#'],
-]
 
 RULES = {}
 
@@ -34,30 +30,59 @@ for line in fileinput.input():
 
         grid = rotated
 
-for i in range(18):
-    size = len(GRID[0])
-    d = 2 if size % 2 == 0 else 3
+SUBGRIDS = Counter()
+SUBGRIDS['.#...####'] += 1
 
-    new_size = (size // d) * (d + 1)
-    new_grid = new_table(None, width=new_size, height=new_size)
+for it in range(18):
+    # Build up our list of subgrids
+    if it % 3 == 0:
+        GRIDS = []
+        ORIG_GRIDS = []
+        for inp in SUBGRIDS:
+            GRIDS.append([list(inp[n:n+3]) for n in range(0, 9, 3)])
+            ORIG_GRIDS.append(inp)
 
-    for y in range(size // d):
-        for x in range(size // d):
-            # Build the string representation of each 2x2 or 3x3 subgrid
-            subgrid = ''
+    NEW_GRIDS = []
+    for grid in GRIDS:
+        size = len(grid)
+        d = 2 if size % 2 == 0 else 3
 
-            for k in range(d):
-                subgrid += ''.join(GRID[y*d + k][x*d:(x+1)*d])
+        new_size = (size // d) * (d + 1)
+        new_grid = new_table(None, width=new_size, height=new_size)
 
-            # Lookup the corresponding rule and populate the new grid
-            out = RULES[subgrid]
-            for ny in range(d+1):
-                for nx in range(d+1):
-                    new_grid[y*(d+1) + ny][x*(d+1) + nx] = out[ny*(d+1) + nx]
+        for y in range(size // d):
+            for x in range(size // d):
+                # Build the string representation of each 2x2 or 3x3 subgrid
+                subgrid = ''
 
-    GRID = new_grid
+                for k in range(d):
+                    subgrid += ''.join(grid[y*d + k][x*d:(x+1)*d])
 
-    if i == 4:
-        print "Lit pixels after 5 iterations:", lit_pixels(GRID)
+                # Lookup the corresponding rule and populate the new grid
+                out = RULES[subgrid]
+                for ny in range(d+1):
+                    for nx in range(d+1):
+                        new_grid[y*(d+1) + ny][x*(d+1) + nx] = out[ny*(d+1) + nx]
 
-print "Lit pixels after 18 iterations:", lit_pixels(GRID)
+        NEW_GRIDS.append(new_grid)
+
+    GRIDS = NEW_GRIDS
+
+    if it in (4, 17):
+        num_pixels = sum(lit_pixels(g) * SUBGRIDS[ORIG_GRIDS[i]] for i, g in enumerate(GRIDS))
+        print "Lit pixels after {} iterations:".format(it + 1), num_pixels
+
+    # Update the count of independent 3x3 subgrids
+    if it % 3 == 2:
+        next_subgrids = Counter()
+        for i, grid in enumerate(GRIDS):
+            mult = SUBGRIDS[ORIG_GRIDS[i]]
+            for y in range(0, 9, 3):
+                for x in range(0, 9, 3):
+                    key = ''.join(
+                        ''.join(grid[y+n][x:x+3])
+                        for n in range(3)
+                    )
+                    next_subgrids[key] += mult
+
+        SUBGRIDS = next_subgrids
