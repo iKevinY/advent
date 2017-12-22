@@ -122,17 +122,16 @@ def knot_hash(msg):
             pos = pos + l + skip % len(sparse)
             skip += 1
 
-    sparse = sparse
-    dense = []
+    hash_val = 0
 
     for i in range(16):
         res = 0
         for j in range(0, 16):
             res ^= sparse[(i * 16) + j]
 
-        dense.append(res)
+        hash_val += res << ((16 - i - 1) * 8)
 
-    return ''.join('%02x' % x for x in dense)
+    return '%032x' % hash_val
 
 
 @total_ordering
