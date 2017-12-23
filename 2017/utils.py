@@ -85,8 +85,8 @@ def _eratosthenes(n):
             yield i
 
             # Mark factors as non-prime
-            for n in xrange(i * i, n, i):  # NOQA
-                _primes[n] = False
+            for j in xrange(i * i, n, i):  # NOQA
+                _primes[j] = False
 
 
 def primes(n):
