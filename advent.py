@@ -52,12 +52,15 @@ def check_solution(program, day, input_file, output_file):
         end = clock()
         cpu_usr = end - start
 
+    valid = True
+
     with open(output_file) as f:
         for line in f:
             if line.strip() not in stdout:
-                return False, stdout, cpu_usr
-        else:
-            return True, stdout, cpu_usr
+                valid = False
+                break
+
+    return valid, stdout, cpu_usr
 
 
 if __name__ == '__main__':
@@ -74,6 +77,8 @@ if __name__ == '__main__':
     else:
         programs = glob.glob('%s/day*.py' % year)
 
+    total_runtime = 0
+
     for program in programs:
         day = int(re.findall(r'(\d+).py', program)[0])
         input_file = '%s/inputs/%02i.txt' % (year, day)
@@ -81,6 +86,8 @@ if __name__ == '__main__':
 
         if os.path.exists(output_file):
             valid, stdout, cpu_usr = check_solution(program, day, input_file, output_file)
+            total_runtime += cpu_usr
+
             print '{}{}{} Day {:02} ({})'.format(
                 bcolors.OKGREEN if valid else bcolors.FAIL,
                 '✓' if valid else '✗',
@@ -92,5 +99,8 @@ if __name__ == '__main__':
 
             if not valid:
                 exit_code = 1
+
+    if len(sys.argv) <= 2:
+        print "Total runtime:", format_time(total_runtime)
 
     sys.exit(exit_code)
