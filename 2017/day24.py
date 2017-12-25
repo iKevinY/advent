@@ -25,6 +25,9 @@ def bridge_bfs(i, port):
             next_ports = ports + [port]
             strength = bridge_strength(next_ports)
 
+            # See if we can incorporate any `X/X` components
+            strength += sum(2 * p for p in BRIDGE_EXTRAS if p in next_ports)
+
             strongest = max(strongest, strength)
             longest = max(longest, strength)
 
@@ -37,13 +40,18 @@ def bridge_bfs(i, port):
 
 BRIDGES = []
 BRIDGE_PORTS = defaultdict(list)
+BRIDGE_EXTRAS = []  # tracks components of type `X/X`
 
-for i, line in enumerate(fileinput.input()):
-    x, y = [int(x) for x in line.split('/')]
+for line in fileinput.input():
+    x, y = (int(x) for x in line.split('/'))
 
-    BRIDGES.append((x, y))
-    BRIDGE_PORTS[x].append(i)
-    BRIDGE_PORTS[y].append(i)
+    if x != y:
+        i = len(BRIDGES)
+        BRIDGES.append((x, y))
+        BRIDGE_PORTS[x].append(i)
+        BRIDGE_PORTS[y].append(i)
+    else:
+        BRIDGE_EXTRAS.append(x)
 
 for i in BRIDGE_PORTS[0]:
     strongest, longest = bridge_bfs(i, 0)
