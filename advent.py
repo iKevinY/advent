@@ -32,15 +32,28 @@ def clock():
     return resource.getrusage(resource.RUSAGE_CHILDREN)[0]
 
 
-def format_time(timespan):
+def color_time_str(str, timespan):
+    if timespan >= 10:
+        color = bcolors.FAIL
+    elif timespan >= 1:
+        color = bcolors.WARNING
+    else:
+        color = ''
+
+    return '{}{}{}'.format(color, str, bcolors.ENDC)
+
+
+def format_time(timespan, padding=None):
     """Formats the timespan in a human readable format"""
     if timespan >= 1.0:
-        return '{}{:.3g} s{}'.format(
-            bcolors.FAIL if timespan >= 10 else bcolors.WARNING,
-            timespan,
-            bcolors.ENDC)
+        time_str = '{:.3g} s'.format(timespan)
     else:
-        return '{:.3g} ms'.format(timespan * 1e3)
+        time_str = '{:.3g} ms'.format(timespan * 1e3)
+
+    if padding is not None:
+        time_str = time_str.rjust(padding)
+
+    return color_time_str(time_str, timespan)
 
 
 def check_solution(program, day, input_file, output_file):
@@ -77,7 +90,7 @@ if __name__ == '__main__':
     else:
         programs = glob.glob('%s/day*.py' % year)
 
-    total_runtime = 0
+    runtimes = []
 
     for program in programs:
         day = int(re.findall(r'(\d+).py', program)[0])
@@ -86,7 +99,7 @@ if __name__ == '__main__':
 
         if os.path.exists(output_file):
             valid, stdout, cpu_usr = check_solution(program, day, input_file, output_file)
-            total_runtime += cpu_usr
+            runtimes.append(cpu_usr)
 
             print '{}{}{} Day {:02} ({})'.format(
                 bcolors.OKGREEN if valid else bcolors.FAIL,
@@ -101,6 +114,21 @@ if __name__ == '__main__':
                 exit_code = 1
 
     if len(sys.argv) <= 2:
-        print "Total runtime:", format_time(total_runtime)
+        print "Total runtime:", format_time(sum(runtimes))
+
+        cutoffs = [
+            0.025, 0.050, 0.075, 0.100, 0.125, 0.150,
+            0.200, 0.250, 0.300, 0.400, 0.500, 0.750,
+            1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5,
+        ]
+
+        cutoffs.extend(range(5, 10))
+        cutoffs.extend(range(10, 20, 2))
+        cutoffs.extend(range(20, 120, 3))
+
+        for day, runtime in enumerate(runtimes, start=1):
+            out = "Day {:02}: {}".format(day, format_time(runtime, padding=7))
+            bar_len = next(i + 1 for i, cutoff in enumerate(cutoffs) if runtime < cutoff)
+            print out, color_time_str('■' * bar_len, runtime)
 
     sys.exit(exit_code)
