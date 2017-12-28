@@ -5,6 +5,7 @@ import os
 import re
 import sys
 import glob
+import argparse
 import resource
 import subprocess
 
@@ -56,9 +57,9 @@ def format_time(timespan, padding=None):
     return color_time_str(time_str, timespan)
 
 
-def check_solution(program, day, input_file, output_file):
+def check_solution(program, day, input_file, output_file, pypy=False):
     with Halo(text='Day {:02}'.format(day)):
-        cmd = ['python', program, input_file]
+        cmd = ['pypy' if pypy else 'python', program, input_file]
         start = clock()
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         stdout = proc.communicate()[0]
@@ -77,20 +78,26 @@ def check_solution(program, day, input_file, output_file):
 
 
 if __name__ == '__main__':
-    exit_code = 0
+    parser = argparse.ArgumentParser(description="Advent of Code puzzle runner.")
+    parser.add_argument('year', type=int)
+    parser.add_argument('puzzle', type=int, nargs='?')
+    parser.add_argument('--pypy', const=True, action='store_const',
+        help="use PyPy instead of CPython")
+    parser.add_argument('--benchmark', const=True, action='store_const',
+        help="compare PyPy against CPython")
 
-    if len(sys.argv) == 1:
-        print "Usage: ./test.py <year> [problem]"
-        sys.exit()
+    args = parser.parse_args()
 
-    year = sys.argv[1]
+    year = args.year
+    puzzle = args.puzzle
+    pypy = args.pypy
 
-    if len(sys.argv) > 2:
-        programs = glob.glob('%s/day%02i.py' % (year, int(sys.argv[2])))
+    if puzzle is not None:
+        programs = glob.glob('%s/day%02i.py' % (year, puzzle))
     else:
         programs = glob.glob('%s/day*.py' % year)
 
-    runtimes = []
+    to_run = []
 
     for program in programs:
         day = int(re.findall(r'(\d+).py', program)[0])
@@ -98,22 +105,45 @@ if __name__ == '__main__':
         output_file = '%s/outputs/%02i.txt' % (year, day)
 
         if os.path.exists(output_file):
-            valid, stdout, cpu_usr = check_solution(program, day, input_file, output_file)
-            runtimes.append(cpu_usr)
+            to_run.append((program, day, input_file, output_file))
 
-            print '{}{}{} Day {:02} ({})'.format(
-                bcolors.OKGREEN if valid else bcolors.FAIL,
-                '✓' if valid else '✗',
-                bcolors.ENDC,
+    if args.benchmark:
+        print "Day   CPython      PyPy    Speedup"
+        print '-' * 34
+
+        for program, day, input_file, output_file in to_run:
+            cpy_time = check_solution(program, day, input_file, output_file, pypy=False)[2]
+            pypy_time = check_solution(program, day, input_file, output_file, pypy=True)[2]
+
+            print "{:02}    {}    {}     {:0.1f}".format(
                 day,
-                format_time(cpu_usr),
+                format_time(cpy_time, padding=7),
+                format_time(pypy_time, padding=7),
+                cpy_time / pypy_time
             )
-            print stdout
 
-            if not valid:
-                exit_code = 1
+        sys.exit(0)
 
-    if len(sys.argv) <= 2:
+    exit_code = 0
+    runtimes = []
+
+    for program, day, input_file, output_file in to_run:
+        valid, stdout, cpu_usr = check_solution(program, day, input_file, output_file, pypy)
+        runtimes.append(cpu_usr)
+
+        print '{}{}{} Day {:02} ({})'.format(
+            bcolors.OKGREEN if valid else bcolors.FAIL,
+            '✓' if valid else '✗',
+            bcolors.ENDC,
+            day,
+            format_time(cpu_usr),
+        )
+        print stdout
+
+        if not valid:
+            exit_code = 1
+
+    if puzzle is None:
         print "Total runtime:", format_time(sum(runtimes))
 
         cutoffs = [
