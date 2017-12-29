@@ -80,7 +80,7 @@ def check_solution(program, day, input_file, output_file, pypy=False):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Advent of Code puzzle runner.")
     parser.add_argument('year', type=int)
-    parser.add_argument('puzzle', type=int, nargs='?')
+    parser.add_argument('puzzles', type=int, metavar='puzzle', nargs='*')
     parser.add_argument('--pypy', const=True, action='store_const',
         help="use PyPy instead of CPython")
     parser.add_argument('--benchmark', const=True, action='store_const',
@@ -89,11 +89,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     year = args.year
-    puzzle = args.puzzle
+    puzzles = args.puzzles
     pypy = args.pypy
 
-    if puzzle is not None:
-        programs = glob.glob('%s/day%02i.py' % (year, puzzle))
+    if puzzles:
+        programs = []
+        for p in puzzles:
+            programs.extend(glob.glob('%s/day%02i.py' % (year, p)))
     else:
         programs = glob.glob('%s/day*.py' % year)
 
@@ -143,7 +145,7 @@ if __name__ == '__main__':
         if not valid:
             exit_code = 1
 
-    if puzzle is None:
+    if len(puzzles) != 1:
         print "Total runtime:", format_time(sum(runtimes))
 
         cutoffs = [
