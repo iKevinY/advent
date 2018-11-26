@@ -34,9 +34,9 @@ def clock():
 
 
 def color_time_str(str, timespan):
-    if timespan >= 10:
+    if abs(timespan) >= 10:
         color = bcolors.FAIL
-    elif timespan >= 1:
+    elif abs(timespan) >= 1:
         color = bcolors.WARNING
     else:
         color = ''
@@ -110,18 +110,19 @@ if __name__ == '__main__':
             to_run.append((program, day, input_file, output_file))
 
     if args.benchmark:
-        print "Day   CPython      PyPy    Speedup"
-        print '-' * 34
+        print "Day   CPython      PyPy      Delta    Speedup"
+        print '-' * 45
 
         for program, day, input_file, output_file in to_run:
             cpy_time = check_solution(program, day, input_file, output_file, pypy=False)[2]
             pypy_time = check_solution(program, day, input_file, output_file, pypy=True)[2]
 
-            print "{:02}    {}    {}     {:0.1f}".format(
+            print "{:02}    {}    {}   {}    {:0.1f}".format(
                 day,
                 format_time(cpy_time, padding=7),
                 format_time(pypy_time, padding=7),
-                cpy_time / pypy_time
+                format_time(cpy_time - pypy_time, padding=9),
+                cpy_time / pypy_time,
             )
 
         sys.exit(0)
