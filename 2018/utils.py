@@ -21,6 +21,10 @@ def parse_line(regex, line):
     return ret
 
 
+def parse_nums(line):
+    return [int(n) for n in re.findall(r'\d+', line)]
+
+
 def new_table(val, width, height):
     return [[val for _ in range(width)] for _ in range(height)]
 
