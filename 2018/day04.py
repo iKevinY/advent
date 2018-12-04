@@ -1,37 +1,32 @@
 import fileinput
 from collections import Counter, defaultdict
 
-from utils import parse_line
+from utils import parse_nums
 
 
 # Read problem input
-EVENTS = []
-for line in fileinput.input():
-    data = parse_line(r'\[(\d+)-(\d+)-(\d+) (\d+):(\d+)\] (.+)', line)
-    EVENTS.append(data)
-
-EVENTS.sort()
+EVENTS = sorted(parse_nums(line, negatives=False) for line in fileinput.input())
 
 # Process events
 SHIFTS = Counter()
 GUARDS = defaultdict(Counter)
 curr_id = None
-sleep = None
+sleep_min = None
 
-for year, month, date, hour, minute, action in EVENTS:
-    if 'begins' in action:
-        curr_id = int(action.split()[1][1:])
+for record in EVENTS:
+    if len(record) == 6:  # shift begins
+        curr_id = int(record[-1])
 
-    elif 'asleep' in action:
-        sleep = hour, minute
+    elif sleep_min is None:  # falls asleep
+        sleep_min = record[-1]
 
-    elif 'wakes' in action:
-        h, m = sleep
-        SHIFTS[curr_id] += ((hour - h) % 24) * 60 + (minute - m)
-        sleep = None
+    else:  # wakes up
+        minute = record[-1]
+        SHIFTS[curr_id] += minute - sleep_min
+        for m in range(sleep_min, minute):
+            GUARDS[curr_id][m] += 1
 
-        for x in range(h * 60 + m, hour * 60 + minute):
-            GUARDS[curr_id][x % 60] += 1
+        sleep_min = None
 
 # Compute Part 1 answer
 guard_id = SHIFTS.most_common(1)[0][0]
@@ -39,15 +34,5 @@ minute = GUARDS[guard_id].most_common(1)[0][0]
 print "Strategy 1 checksum:", guard_id * minute
 
 # Compute Part 2 answer
-max_cnt = 0
-max_min = 0
-max_id = 0
-
-for guard_id, minutes in GUARDS.items():
-    minute, count = minutes.most_common(1)[0]
-    if count > max_cnt:
-        max_cnt = count
-        max_min = minute
-        max_id = guard_id
-
-print "Strategy 2 checksum:", max_id * max_min
+guard_id, (minute, _) = max(((i, c.most_common(1)[0]) for i, c in GUARDS.items()), key=lambda x: x[1][1])
+print "Strategy 2 checksum:", guard_id * minute

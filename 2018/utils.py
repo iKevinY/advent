@@ -21,8 +21,9 @@ def parse_line(regex, line):
     return ret
 
 
-def parse_nums(line):
-    return [int(n) for n in re.findall(r'-?\d+', line)]
+def parse_nums(line, negatives=True):
+    num_re = r'-?\d+' if negatives else r'\d+'
+    return [int(n) for n in re.findall(num_re, line)]
 
 
 def new_table(val, width, height):
