@@ -3,12 +3,14 @@ import sys  # NOQA
 import re  # NOQA
 import math  # NOQA
 import fileinput
+from string import ascii_uppercase, ascii_lowercase  # NOQA
 from collections import Counter, defaultdict, deque, namedtuple  # NOQA
 from itertools import count, product, permutations, combinations, combinations_with_replacement  # NOQA
 
 from utils import parse_line, parse_nums, mul, all_unique, factors, memoize, primes  # NOQA
 from utils import new_table, transposed, rotated  # NOQA
 from utils import md5, sha256, knot_hash  # NOQA
+from utils import VOWELS, CONSONANTS  # NOQA
 from utils import Point, DIRS, DIRS_4, DIRS_8  # NOQA
 
 # Itertools Functions:
