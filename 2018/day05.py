@@ -9,15 +9,13 @@ def reduce_polymer(poly, omit=None):
         poly = poly.replace('', '')
 
     while True:
-        improved = False
         for (x, X) in zip(ascii_lowercase, ascii_uppercase):
             new = poly.replace(x + X, '').replace(X + x, '')
             if len(new) < len(poly):
                 improved = True
                 poly = new
                 break
-
-        if not improved:
+        else:
             return len(poly)
 
 
