@@ -25,6 +25,7 @@ table = new_table(None, width=2, height=4)
 
 for i, line in enumerate(fileinput.input()):
     line = line.strip()
+    nums = parse_nums(line)
     data = parse_line(r'', line)
 
     if i == 0:

@@ -179,6 +179,12 @@ class Point:
     def __hash__(self):
         return hash(tuple((self.x, self.y)))
 
+    def to(self, other):
+        return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
+
+    def to_manhattan(self, other):
+        return abs(self.x - other.x) + abs(self.y - other.y)
+
     @property
     def manhattan(self):
         return abs(self.x) + abs(self.y)
