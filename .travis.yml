@@ -1,5 +1,5 @@
 language: python
-python: "2.7"
+python: "pypy"
 env:
 - AOC_YEAR=2018
 - AOC_YEAR=2017
