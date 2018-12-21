@@ -101,7 +101,7 @@ if __name__ == '__main__':
 
     to_run = []
 
-    for program in programs:
+    for program in sorted(programs):
         day = int(re.findall(r'(\d+).py', program)[0])
         input_file = '%s/inputs/%02i.txt' % (year, day)
         output_file = '%s/outputs/%02i.txt' % (year, day)
