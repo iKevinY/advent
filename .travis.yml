@@ -1,6 +1,7 @@
 language: python
 python: "pypy"
 env:
+- AOC_YEAR=2019
 - AOC_YEAR=2018
 - AOC_YEAR=2017
 - AOC_YEAR=2016
@@ -8,6 +9,7 @@ env:
 matrix:
     fast_finish: true
     allow_failures:
+    - env: AOC_YEAR=2018
     - env: AOC_YEAR=2017
     - env: AOC_YEAR=2015
     - env: AOC_YEAR=2016
