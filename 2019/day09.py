@@ -1,6 +1,21 @@
 import fileinput
 
 
+# True = read, False = write
+INSTRUCTIONS = {
+    1: (True, True, False),
+    2: (True, True, False),
+    3: (False, None, None),
+    4: (True, None, None),
+    5: (True, True, None),
+    6: (True, True, None),
+    7: (True, True, False),
+    8: (True, True, False),
+    9: (True, None, None),
+    99: (None, None, None)
+}
+
+
 GLOBAL_INPUTS = [0]
 
 
@@ -18,46 +33,32 @@ def emulate(pid, pc=0):
     outs = []
     relative_base = 0
 
-    def resolve_modes(a, b, c, mode_a, mode_b, mode_c):
+    def resolve_modes(op, params, modes):
         res = [a, b, c]
-        try:
-            if mode_a == 0:
-                res[0] = tape[a]
-            elif mode_a == 1:
-                res[0] = a
-            elif mode_a == 2:
-                res[0] = tape[relative_base + a]
-        except e:
-            pass
 
-        try:
-            if mode_b == 0:
-                res[1] = tape[b]
-            elif mode_b == 1:
-                res[1] = b
-            elif mode_b == 2:
-                res[1] = tape[relative_base + b]
-        except e:
-            pass
+        for i, (is_read, p, m) in enumerate(zip(INSTRUCTIONS[op], params, modes)):
+            if is_read is None:
+                continue
 
-        # Third param always output, instruction handles indirection
-        try:
-            if mode_c == 0:
-                res[2] = c
-            elif mode_c == 2:
-                res[2] = relative_base + c
-        except e:
-            pass
+            if is_read:
+                if m == 0:
+                    res[i] = tape[p]
+                elif m == 1:
+                    res[i] = p
+                elif m == 2:
+                    res[i] = tape[relative_base + p]
+            else:
+                if m == 0:
+                    res[i] = p
+                elif m == 2:
+                    res[i] = relative_base + p
 
         return res
 
     while pc < len(tape):
         mode_op, a, b, c = tape[pc:pc+4]
         op, mode_a, mode_b, mode_c = parse_mode(tape, mode_op, a, b, c)
-
-        # INP uses first param to determine indirection, special case
-        if op != 3:
-            a, b, c = resolve_modes(a, b, c, mode_a, mode_b, mode_c)
+        a, b, c = resolve_modes(op, (a, b, c), (mode_a, mode_b, mode_c))
 
         # ADD a b c
         if op == 1:
@@ -71,11 +72,7 @@ def emulate(pid, pc=0):
 
         # INP a
         elif op == 3:
-            if mode_a == 0:
-                tape[a] = GLOBAL_INPUTS[pid]
-            elif mode_a == 2:
-                tape[relative_base + a] = GLOBAL_INPUTS[pid]
-
+            tape[a] = GLOBAL_INPUTS[pid]
             pc += 2
 
         # OUT b
