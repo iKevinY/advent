@@ -12,17 +12,13 @@ def angle(a, b):
 
 
 # Read problem input
-grid = []
 asteroids = set()
 
 for y, line in enumerate(fileinput.input()):
     for x, c in enumerate(line.strip()):
         if c == '#':
             asteroids.add((x, y))
-    grid.append([c == '#' for c in line.strip()])
 
-width = len(grid[0])
-height = len(grid)
 
 # Part 1
 detections = {
