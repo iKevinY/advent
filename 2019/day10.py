@@ -11,8 +11,6 @@ def angle(a, b):
     return math.atan2(a[1] - b[1], a[0] - b[0])
 
 
-EPS = 1e-6
-
 # Read problem input
 grid = []
 asteroids = set()
@@ -27,23 +25,10 @@ width = len(grid[0])
 height = len(grid)
 
 # Part 1
-detections = {}
-
-for y in range(height):
-    for x in range(width):
-        if not grid[y][x]:
-            continue
-
-        p = (x, y)
-        count = 0
-        seen_angles = set()
-
-        for other in sorted(asteroids, key=lambda a: dist(p, a))[1:]:
-            if angle(p, other) not in seen_angles:
-                seen_angles.add(angle(p, other))
-                count += 1
-
-        detections[x, y] = count
+detections = {
+    ast: len(set(angle(ast, other) for other in (asteroids - set(ast))))
+    for ast in asteroids
+}
 
 station, num = max(detections.items(), key=lambda x: x[1])
 print "Number of detections:", num
@@ -68,7 +53,7 @@ queue = deque(sorted(by_angles.items()))
 
 # Rotate the queue to the starting angle
 start = math.pi / 2
-while abs(queue[0][0] - start) > EPS:
+while abs(queue[0][0] - start) > 1e-6:
     queue.rotate(-1)
 
 # Iterate through the circular list, vaporizing the closest asteroid
