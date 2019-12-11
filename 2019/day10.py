@@ -2,13 +2,7 @@ import math
 import fileinput
 from collections import deque, defaultdict
 
-
-def dist(x, y):
-    return (((x[0] - y[0]) ** 2) + ((x[1] - y[1]) ** 2)) ** 0.5
-
-
-def angle(a, b):
-    return math.atan2(a[1] - b[1], a[0] - b[0])
+from utils import Point
 
 
 # Read problem input
@@ -17,13 +11,13 @@ asteroids = set()
 for y, line in enumerate(fileinput.input()):
     for x, c in enumerate(line.strip()):
         if c == '#':
-            asteroids.add((x, y))
+            asteroids.add(Point(x, y))
 
 
 # Part 1
 detections = {
-    ast: len(set(angle(ast, other) for other in (asteroids - set(ast))))
-    for ast in asteroids
+    a: len(set(a.angle(o) for o in (asteroids - set([a]))))
+    for a in asteroids
 }
 
 station, num = max(detections.items(), key=lambda x: x[1])
@@ -38,14 +32,14 @@ asteroids.remove(station)
 # the station (going from furthest to closest). We rotate in the
 # positive-radian direction as a hack, since the y-axis coordinates
 # actually increase going downwards (as opposed to upwards).
-by_angles = defaultdict(list)
+by_angle = defaultdict(list)
 for a in asteroids:
-    by_angles[angle(station, a)].append(a)
+    by_angle[station.angle(a)].append(a)
 
-for k, v in by_angles.items():
-    v.sort(key=lambda a: -dist(station, a))
+for k, v in by_angle.items():
+    v.sort(key=station.dist, reverse=True)
 
-queue = deque(sorted(by_angles.items()))
+queue = deque(sorted(by_angle.items()))
 
 # Rotate the queue to the starting angle
 start = math.pi / 2
@@ -62,4 +56,4 @@ for i in range(200):
     else:
         queue.rotate(-1)
 
-print "200th asteroid checksum:", vaporized[0] * 100 + vaporized[1]
+print "200th asteroid checksum:", vaporized.x * 100 + vaporized.y
