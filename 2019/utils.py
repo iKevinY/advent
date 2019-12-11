@@ -139,6 +139,21 @@ def knot_hash(msg):
     return '%032x' % hash_val
 
 
+HEX_DIRS = {
+    'N': (1, -1, 0),
+    'NE': (1, 0, -1),
+    'SE': (0, 1, -1),
+    'S': (-1, 1, 0),
+    'SW': (-1, 0, 1),
+    'NW': (0, -1, 1),
+}
+
+
+def hex_distance(x, y, z):
+    """Returns a given hex point's distance from the origin."""
+    return (abs(x) + abs(y) + abs(z)) // 2
+
+
 @total_ordering
 class Point:
     """Simple 2-dimensional point."""
@@ -168,7 +183,7 @@ class Point:
         return not self == other
 
     def __lt__(self, other):
-        return self.manhattan < other.manhattan
+        return self.length < other.length
 
     def __str__(self):
         return "({}, {})".format(self.x, self.y)
@@ -179,18 +194,23 @@ class Point:
     def __hash__(self):
         return hash(tuple((self.x, self.y)))
 
-    def to(self, other):
+    def dist(self, other):
         return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
-    def to_manhattan(self, other):
+    def dist_manhattan(self, other):
         return abs(self.x - other.x) + abs(self.y - other.y)
+
+    def angle(self, to=None):
+        if to is None:
+            return math.atan2(self.y, self.x)
+        return math.atan2(self.y - to.y, self.x - to.x)
 
     @property
     def manhattan(self):
         return abs(self.x) + abs(self.y)
 
     @property
-    def distance(self):
+    def length(self):
         return math.sqrt(self.x ** 2 + self.y ** 2)
 
     def neighbours_4(self):
