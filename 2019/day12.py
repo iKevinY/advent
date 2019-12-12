@@ -1,15 +1,15 @@
 import fileinput
-from copy import deepcopy
 from itertools import count
 
 from utils import parse_nums
 
 
-def gcd(a,b):
+def gcd(a, b):
     """Compute the greatest common divisor of a and b"""
     while b > 0:
         a, b = b, a % b
     return a
+
 
 def lcm(a, b):
     """Compute the lowest common multiple of a and b"""
@@ -17,19 +17,18 @@ def lcm(a, b):
 
 
 positions = []
+initial = []
+velocities = [[0] * 3 for _ in range(4)]
+
 for i, line in enumerate(fileinput.input()):
     line = line.strip()
     nums = parse_nums(line)
     positions.append(list(nums))
+    initial.append(list(nums))
 
-
-velocities = [[0] * 3 for _ in range(4)]
-
-INIT_POS = deepcopy(positions)
-INIT_VEL = deepcopy(velocities)
 CYCLES = [None, None, None]
 
-for i in count(start=1):
+for step in count(start=1):
     # Update velocities
     for x in range(4):
         for y in range(x + 1, 4):
@@ -46,14 +45,12 @@ for i in count(start=1):
         for d in range(3):
             positions[x][d] += velocities[x][d]
 
-    energy = 0
+    if step == 1000:
+        energy = 0
 
-    for pos, vel in zip(positions, velocities):
-        pot = sum(abs(p) for p in pos)
-        kin = sum(abs(p) for p in vel)
-        energy += pot * kin
+        for pos, vel in zip(positions, velocities):
+            energy += sum(abs(p) for p in pos) * sum(abs(v) for v in vel)
 
-    if i == 1000:
         print "Total energy after 1000 steps:", energy
 
     for d in range(3):
@@ -61,12 +58,12 @@ for i in count(start=1):
             continue
 
         for m in range(4):
-            if positions[m][d] != INIT_POS[m][d]:
+            if positions[m][d] != initial[m][d]:
                 break
-            if velocities[m][d] != INIT_VEL[m][d]:
+            if velocities[m][d] != 0:
                 break
         else:
-            CYCLES[d] = i
+            CYCLES[d] = step
 
     if all(CYCLES):
         print "Steps for full cycle:", lcm(lcm(CYCLES[0], CYCLES[1]), CYCLES[2])
