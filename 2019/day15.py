@@ -77,4 +77,4 @@ except StopIteration:
 assert 2 in BOARD.values()
 
 print "Optimal movement to oxygen:", bfs(BOARD, Point(0, 0), OXYGEN)
-print "Minutes taken to fill up:", bfs(BOARD, OXYGEN)
+print "Minutes taken to fill up:", bfs(BOARD, OXYGEN) - 1
