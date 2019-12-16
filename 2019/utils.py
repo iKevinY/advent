@@ -64,6 +64,54 @@ def factors(n):
         for x in tup)
 
 
+def gcd(a,b):
+    """Compute the greatest common divisor of a and b"""
+    while b > 0:
+        a, b = b, a % b
+    return a
+
+
+def lcm(a, b):
+    """Compute the lowest common multiple of a and b"""
+    return a * b / gcd(a, b)
+
+
+def min_max_xy(points):
+    if len(points) == 0:
+        return None, None, None, None
+    if type(points[0]) == tuple:
+        min_x = min(p[0] for p in points)
+        max_x = max(p[0] for p in points)
+        min_y = min(p[1] for p in points)
+        max_y = max(p[1] for p in points)
+    else:
+        min_x = min(p.x for p in points)
+        max_x = max(p.x for p in points)
+        min_y = min(p.y for p in points)
+        max_y = max(p.y for p in points)
+
+    return min_x, max_x, min_y, max_y
+
+
+def print_grid(grid, f=None):
+    if f is None:
+        f = lambda x: x  # NOQA
+
+    if type(grid) is dict:
+        positions = grid.keys()
+        min_x, max_x, min_y, max_y = min_max_xy(positions)
+        if type(positions[0]) is tuple:
+            for y in range(min_y, max_y + 1):
+                print ''.join(f(grid.get((x, y), ' ')) for x in range(min_x, max_x + 1))
+        else:
+            # (x, y) => point
+            for y in range(min_y, max_y + 1):
+                print ''.join(f(grid.get(Point(x, y), ' ')) for x in range(min_x, max_x + 1))
+    else:
+        for y in range(len(grid)):
+            print ''.join(f(grid[y][x]) for x in range(len(grid[0])))
+
+
 def memoize(f):
     """Simple dictionary-based memoization decorator"""
     cache = {}
