@@ -19,6 +19,17 @@ from utils import Point, DIRS, DIRS_4, DIRS_8  # NOQA
 # combinations('ABCD', 2)                     AB AC AD BC BD CD
 # combinations_with_replacement('ABCD', 2)    AA AB AC AD BB BC BD CC CD DD
 
+# It's Intcode time again!
+# from intcode import emulate
+# TAPE = [int(x) for x in fileinput.input()[0].split(',')]
+# TAPE += [0] * 100000
+# GLOBAL_INPUTS = [0]
+# vm = emulate(TAPE, 0, GLOBAL_INPUTS)
+# try:
+#     resp = next(vm)
+# except StopIteration:
+#     pass
+
 total = 0
 result = []
 table = new_table(None, width=2, height=4)
