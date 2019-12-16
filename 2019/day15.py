@@ -6,6 +6,45 @@ from utils import Point
 from intcode import emulate
 
 
+ROBOT_DIRS = [
+    Point(1, 0),   # north
+    Point(-1, 0),  # south
+    Point(0, -1),  # west
+    Point(0, 1),   # east
+]
+
+INVERSE_DIRS = {
+    0: 1,
+    1: 0,
+    2: 3,
+    3: 2,
+}
+
+
+def robot_dfs(vm, graph, curr, approach_d):
+    for d in range(4):
+        np = curr + ROBOT_DIRS[d]
+        if np in graph:
+            continue
+
+        # Attempt to move to next tile
+        GLOBAL_INPUTS[0] = d + 1
+        resp = next(vm)
+
+        if resp == 0:
+            BOARD[np] = 0
+        else:
+            if resp == 2:
+                global OXYGEN
+                OXYGEN = np
+            BOARD[np] = resp
+            robot_dfs(vm, graph, np, d)
+
+    # Can't rely on call stack alone to backtrack
+    GLOBAL_INPUTS[0] = INVERSE_DIRS[approach_d] + 1
+    next(vm)
+
+
 def bfs(graph, start, end=None):
     seen = set()
     dist = 0
@@ -39,42 +78,8 @@ GLOBAL_INPUTS = [0]
 BOARD = {}
 OXYGEN = None
 
-ROBOT_DIRS = [
-    Point(1, 0),   # north
-    Point(-1, 0),  # south
-    Point(0, -1),  # west
-    Point(0, 1),   # east
-]
-
-
-# Build up board state by exploration
 vm = emulate(TAPE, 0, GLOBAL_INPUTS)
-
-try:
-    curr = Point(0, 0)
-    for _ in range(1000000):
-        facing = random.choice(xrange(4))
-        while BOARD.get(curr + ROBOT_DIRS[facing], 1) == 0:
-            facing = random.choice(xrange(4))
-
-        GLOBAL_INPUTS[0] = facing + 1
-        resp = next(vm)
-
-        if resp == 0:
-            BOARD[curr + ROBOT_DIRS[facing]] = 0
-        elif resp == 1:
-            curr += ROBOT_DIRS[facing]
-            BOARD[curr] = 1
-        elif resp == 2:
-            curr += ROBOT_DIRS[facing]
-            OXYGEN = curr
-            BOARD[curr] = 2
-
-except StopIteration:
-    pass
-
-# We should have found the oxygen tank after this many ticks
-assert 2 in BOARD.values()
+robot_dfs(vm, BOARD, Point(0, 0), 0)
 
 print "Optimal movement to oxygen:", bfs(BOARD, Point(0, 0), OXYGEN)
 print "Minutes taken to fill up:", bfs(BOARD, OXYGEN) - 1
