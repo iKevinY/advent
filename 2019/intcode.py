@@ -22,9 +22,10 @@ def parse_mode(tape, mode_op, a, b, c):
     return op, mode_a, mode_b, mode_c
 
 
-def emulate(tape, pid, GLOBAL_INPUTS, pc=0):
+def emulate(tape, pid, inputs, pc=0, seq_input=True):
     tape = tape[:]
     relative_base = 0
+    ipc = 0
 
     def resolve_modes(op, params, modes):
         res = [a, b, c]
@@ -65,7 +66,11 @@ def emulate(tape, pid, GLOBAL_INPUTS, pc=0):
 
         # INP a
         elif op == 3:
-            tape[a] = GLOBAL_INPUTS[pid]
+            if seq_input:
+                tape[a] = inputs[ipc % len(inputs)]
+                ipc += 1
+            else:
+                tape[a] = inputs[pid]
             pc += 2
 
         # OUT b
