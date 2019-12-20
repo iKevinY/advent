@@ -2,7 +2,7 @@ import fileinput
 from string import ascii_uppercase
 from collections import defaultdict
 
-from utils import Point, DIRS
+from utils import Point
 
 
 MAZE = defaultdict(lambda: '#')
@@ -28,26 +28,21 @@ for y, line in enumerate(fileinput.input()):
 # Determine the true label name and grid position of portals
 for p, c in MAZE.items():
     if c in ascii_uppercase:
-        name = ''
-        if MAZE[p + Point(-1, 0)] in ascii_uppercase:
-            name = MAZE[p + Point(-1, 0)] + c
-            op = p + Point(-1, 0)
-        elif MAZE[p + Point(1, 0)] in ascii_uppercase:
-            name = c + MAZE[p + Point(1, 0)]
-            op = p + Point(1, 0)
-        elif MAZE[p + Point(0, -1)] in ascii_uppercase:
-            name = MAZE[p + Point(0, -1)] + c
-            op = p + Point(0, -1)
-        elif MAZE[p + Point(0, 1)] in ascii_uppercase:
-            name = c + MAZE[p + Point(0, 1)]
-            op = p + Point(0, 1)
-
         for np in p.neighbours_4():
-            if MAZE[np] == '.':
-                portal_loc = np
-        for np in op.neighbours_4():
-            if MAZE[np] == '.':
-                portal_loc = np
+            if MAZE[np] in ascii_uppercase:
+                if np.x > p.x or np.y > p.y:
+                    name = c + MAZE[np]
+                else:
+                    name = MAZE[np] + c
+
+                break
+
+        for pp in p.neighbours_4():
+            if MAZE[pp] == '.':
+                portal_loc = pp
+        for pp in np.neighbours_4():
+            if MAZE[pp] == '.':
+                portal_loc = pp
 
         if name == 'AA':
             AA = portal_loc
@@ -58,7 +53,7 @@ for p, c in MAZE.items():
 
 # Map portal positions and track inner/outer edges
 for x in PORTALS:
-    a, b = list(PORTALS[x])
+    a, b = PORTALS[x]
     PORTAL_MAP[a] = b
     PORTAL_MAP[b] = a
     if a.x == 2 or a.x == (MAX_X - 2) or a.y == 2 or a.y == (MAX_Y - 2):
@@ -81,6 +76,7 @@ def bfs(start, end, recursive=False):
             if p in PORTAL_MAP:
                 if not (p in OUTERS and level == 0) or not recursive:
                     neighbours.append(PORTAL_MAP[p])
+
             for np in neighbours:
                 new_level = level
                 if recursive:
