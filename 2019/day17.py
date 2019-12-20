@@ -10,7 +10,7 @@ TAPE += [0] * 100000
 
 
 # Part 1
-vm = emulate(TAPE[:], 0, [])
+vm = emulate(TAPE[:], [])
 board = []
 
 try:
@@ -61,7 +61,7 @@ for ins in (main, fn_a, fn_b, fn_c, camera):
     instructions.append(ord('\n'))
 
 TAPE[0] = 2
-for c in emulate(TAPE[:], 0, instructions, seq_input=True):
+for c in emulate(TAPE[:], instructions):
     try:
         print chr(c),
     except Exception:

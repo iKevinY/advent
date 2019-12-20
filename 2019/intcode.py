@@ -1,3 +1,9 @@
+from collections import defaultdict
+
+# Potential debug output
+BREAKPOINTS = set([])
+LAST_SEEN = defaultdict(list)
+
 # True = read, False = write
 INSTRUCTIONS = {
     1: ('ADD', (True, True, False)),
@@ -13,6 +19,15 @@ INSTRUCTIONS = {
 }
 
 
+def debug_param_mode(param, mode, relative_base):
+    if mode == 0:
+        return '%({})'.format(param)
+    elif mode == 1:
+        return str(param)
+    elif mode == 2:
+        return '%({}{}{})'.format(relative_base, '+' if param >= 0 else '', param)
+
+
 def parse_mode(tape, mode_op, a, b, c):
     op = mode_op % 100
     mode_a = (mode_op // 100) % 10
@@ -22,9 +37,8 @@ def parse_mode(tape, mode_op, a, b, c):
     return op, mode_a, mode_b, mode_c
 
 
-def emulate(tape, pid, inputs, pc=0, seq_input=True):
+def emulate(tape, inputs, pc=0, relative_base=0, debug=False):
     tape = tape[:]
-    relative_base = 0
     ipc = 0
 
     def resolve_modes(op, params, modes):
@@ -52,6 +66,25 @@ def emulate(tape, pid, inputs, pc=0, seq_input=True):
     while pc < len(tape):
         mode_op, a, b, c = tape[pc:pc+4]
         op, mode_a, mode_b, mode_c = parse_mode(tape, mode_op, a, b, c)
+        modes = [mode_a, mode_b, mode_c]
+        last_pc = pc
+
+        if debug:
+            foo = INSTRUCTIONS.get(op, ('???', ()))
+            ins = foo[0]
+            n = sum(i is not None for i in foo[1])
+            params = ' '.join(debug_param_mode(tape[pc+1+i], modes[i], relative_base) for i in range(n))
+            print 'PC: {:3}  RB: {:3} |'.format(pc, relative_base), ins, params
+
+            if pc in BREAKPOINTS:
+                if pc in LAST_SEEN:
+                    for i, (m, n) in enumerate(zip(LAST_SEEN[pc], tape)):
+                        if m != n:
+                            print "    | >  {}: {} -> {}".format(i, m, n)
+
+                LAST_SEEN[last_pc] = tape[:]
+                time.sleep(0.001)
+
         a, b, c = resolve_modes(op, (a, b, c), (mode_a, mode_b, mode_c))
 
         # ADD a b c
@@ -66,11 +99,8 @@ def emulate(tape, pid, inputs, pc=0, seq_input=True):
 
         # INP a
         elif op == 3:
-            if seq_input:
-                tape[a] = inputs[ipc % len(inputs)]
-                ipc += 1
-            else:
-                tape[a] = inputs[pid]
+            tape[a] = inputs[ipc % len(inputs)]
+            ipc += 1
             pc += 2
 
         # OUT b

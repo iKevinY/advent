@@ -10,7 +10,7 @@ def affected(x, y):
     if x < 0 or y < 0:
         return 0
 
-    vm = emulate(TAPE, 0, [x, y], seq_input=True)
+    vm = emulate(TAPE, [x, y])
     return next(vm)
 
 

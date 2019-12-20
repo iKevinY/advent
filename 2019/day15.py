@@ -21,14 +21,14 @@ INVERSE_DIRS = {
 }
 
 
-def robot_dfs(vm, graph, curr, approach_d):
+def robot_dfs(vm, instructions, graph, curr, approach_d):
     for d in range(4):
         np = curr + ROBOT_DIRS[d]
         if np in graph:
             continue
 
         # Attempt to move to next tile
-        GLOBAL_INPUTS[0] = d + 1
+        instructions[0] = d + 1
         resp = next(vm)
 
         if resp == 0:
@@ -38,10 +38,10 @@ def robot_dfs(vm, graph, curr, approach_d):
                 global OXYGEN
                 OXYGEN = np
             BOARD[np] = resp
-            robot_dfs(vm, graph, np, d)
+            robot_dfs(vm, instructions, graph, np, d)
 
     # Can't rely on call stack alone to backtrack
-    GLOBAL_INPUTS[0] = INVERSE_DIRS[approach_d] + 1
+    instructions[0] = INVERSE_DIRS[approach_d] + 1
     next(vm)
 
 
@@ -74,12 +74,12 @@ def bfs(graph, start, end=None):
 TAPE = [int(x) for x in fileinput.input()[0].split(',')]
 TAPE += [0] * 100000
 
-GLOBAL_INPUTS = [0]
 BOARD = {}
 OXYGEN = None
 
-vm = emulate(TAPE, 0, GLOBAL_INPUTS)
-robot_dfs(vm, BOARD, Point(0, 0), 0)
+instructions = [0]
+vm = emulate(TAPE, instructions)
+robot_dfs(vm, instructions, BOARD, Point(0, 0), 0)
 
 print "Optimal movement to oxygen:", bfs(BOARD, Point(0, 0), OXYGEN)
 print "Minutes taken to fill up:", bfs(BOARD, OXYGEN) - 1
