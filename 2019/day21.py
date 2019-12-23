@@ -29,7 +29,7 @@ RUN
 
 for instructions in (walking, running):
     program = [ord(c) for c in instructions]
-    vm = emulate(TAPE, program)
+    vm = emulate(TAPE, program[::-1])
     try:
         while True:
             resp = next(vm)

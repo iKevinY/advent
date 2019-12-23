@@ -17,7 +17,7 @@ NAT = [None, None]
 
 
 def start_nic(pid):
-    vm = emulate(TAPE, PACKET_QUEUES[pid], consume_input=True)
+    vm = emulate(TAPE, PACKET_QUEUES[pid])
 
     while True:
         addr = next(vm)
@@ -28,7 +28,7 @@ def start_nic(pid):
             NAT[0] = x
             NAT[1] = y
         else:
-            PACKET_QUEUES[addr].extend([x, y])
+            PACKET_QUEUES[addr].extendleft([x, y])
 
 
 def start_nat():
@@ -48,11 +48,11 @@ def start_nat():
                     os._exit(1)
                 seen.add(y)
 
-                PACKET_QUEUES[0].extend(NAT)
+                PACKET_QUEUES[0].extendleft(NAT)
                 NAT[0] = None
                 NAT[1] = None
 
-        time.sleep(1)
+        time.sleep(0.1)
 
 
 threads = []

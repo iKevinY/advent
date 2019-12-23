@@ -35,11 +35,11 @@ try:
                 ball_x = x
 
         if ball_x < padd_x:
-            inputs[0] = -1
+            inputs.append(-1)
         elif ball_x > padd_x:
-            inputs[0] = 1
+            inputs.append(1)
         else:
-            inputs[0] = 0
+            inputs.append(0)
 
 except StopIteration:
     print "Score after last block is broken:", score

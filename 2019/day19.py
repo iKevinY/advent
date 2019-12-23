@@ -10,7 +10,7 @@ def affected(x, y):
     if x < 0 or y < 0:
         return 0
 
-    vm = emulate(TAPE, [x, y])
+    vm = emulate(TAPE, [y, x])
     return next(vm)
 
 
@@ -54,5 +54,5 @@ while True:
 
             break
         else:
-            print "Point checksum", x * 10000 + (y - 99)
+            print "100x100 point checksum:", x * 10000 + (y - 99)
             sys.exit()

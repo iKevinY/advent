@@ -32,7 +32,7 @@ def simulate_robot(tape, start=0):
             elif facing == 3:
                 x -= 1
 
-            inputs[0] = grid.get((x, y), 0)
+            inputs.append(grid.get((x, y), 0))
     except StopIteration:
         return grid
 

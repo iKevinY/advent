@@ -28,7 +28,7 @@ def robot_dfs(vm, instructions, graph, curr, approach_d):
             continue
 
         # Attempt to move to next tile
-        instructions[0] = d + 1
+        instructions.append(d + 1)
         resp = next(vm)
 
         if resp == 0:
@@ -41,7 +41,7 @@ def robot_dfs(vm, instructions, graph, curr, approach_d):
             robot_dfs(vm, instructions, graph, np, d)
 
     # Can't rely on call stack alone to backtrack
-    instructions[0] = INVERSE_DIRS[approach_d] + 1
+    instructions.append(INVERSE_DIRS[approach_d] + 1)
     next(vm)
 
 

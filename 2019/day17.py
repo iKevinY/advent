@@ -61,7 +61,7 @@ for ins in (main, fn_a, fn_b, fn_c, camera):
     instructions.append(ord('\n'))
 
 TAPE[0] = 2
-for c in emulate(TAPE[:], instructions):
+for c in emulate(TAPE[:], instructions[::-1]):
     try:
         print chr(c),
     except Exception:
