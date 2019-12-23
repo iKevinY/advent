@@ -37,7 +37,7 @@ def parse_mode(tape, mode_op, a, b, c):
     return op, mode_a, mode_b, mode_c
 
 
-def emulate(tape, inputs, pc=0, relative_base=0, debug=False):
+def emulate(tape, inputs, pc=0, relative_base=0, debug=False, consume_input=False):
     tape = tape[:]
     ipc = 0
 
@@ -99,8 +99,14 @@ def emulate(tape, inputs, pc=0, relative_base=0, debug=False):
 
         # INP a
         elif op == 3:
-            tape[a] = inputs[ipc % len(inputs)]
-            ipc += 1
+            if consume_input:
+                if len(inputs) == 0:
+                    tape[a] = -1
+                else:
+                    tape[a] = inputs.popleft()
+            else:
+                tape[a] = inputs[ipc % len(inputs)]
+                ipc += 1
             pc += 2
 
         # OUT b
