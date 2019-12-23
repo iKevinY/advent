@@ -102,7 +102,10 @@ if __name__ == '__main__':
     to_run = []
 
     for program in sorted(programs):
-        day = int(re.findall(r'(\d+).py', program)[0])
+        try:
+            day = int(re.findall(r'(\d+).py', program)[0])
+        except IndexError:
+            continue
         input_file = '%s/inputs/%02i.txt' % (year, day)
         output_file = '%s/outputs/%02i.txt' % (year, day)
 
