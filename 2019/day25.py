@@ -1,6 +1,5 @@
 import sys
 import fileinput
-from collections import deque
 from itertools import combinations
 
 from intcode import emulate
@@ -52,9 +51,8 @@ for i in range(1, len(items) + 1):
 
 TAPE = [int(x) for x in fileinput.input()[0].split(',')]
 TAPE += [0] * 10000
-inputs = deque(reversed([ord(c) for c in TAS]))
 
-vm = emulate(TAPE, inputs)
+vm = emulate(TAPE, [ord(c) for c in TAS][::-1])
 try:
     while True:
         resp = chr(next(vm))
