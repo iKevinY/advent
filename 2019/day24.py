@@ -62,7 +62,7 @@ def solve_part_2(board):
     for minutes in range(200):
         new_board = {}
 
-        for z in range(-201, 201):
+        for z in range(-(minutes + 1), minutes + 2):
             for y in range(5):
                 for x in range(5):
                     if x == 2 and y == 2:
