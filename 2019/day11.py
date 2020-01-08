@@ -39,7 +39,6 @@ def simulate_robot(tape, start=0):
 
 # Read input
 TAPE = [int(x) for x in fileinput.input()[0].split(',')]
-TAPE += [0] * 100000
 
 # Part 1
 grid = simulate_robot(TAPE, 0)

@@ -16,7 +16,6 @@ def affected(x, y):
 
 # Read problem input
 TAPE = [int(x) for x in fileinput.input()[0].split(',')]
-TAPE += [0] * 100000
 
 
 part_1 = sum(affected(x, y) for y in range(50) for x in range(50))

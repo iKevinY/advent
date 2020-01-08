@@ -6,7 +6,6 @@ from intcode import emulate
 
 # Read input
 TAPE = [int(x) for x in fileinput.input()[0].split(',')]
-TAPE += [0] * 100000
 TAPE[0] = 2
 
 inputs = [0]

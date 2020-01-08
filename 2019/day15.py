@@ -72,7 +72,6 @@ def bfs(graph, start, end=None):
 
 # Read input
 TAPE = [int(x) for x in fileinput.input()[0].split(',')]
-TAPE += [0] * 100000
 
 BOARD = {}
 OXYGEN = None

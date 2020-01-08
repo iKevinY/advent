@@ -50,7 +50,6 @@ for i in range(1, len(items) + 1):
 
 
 TAPE = [int(x) for x in fileinput.input()[0].split(',')]
-TAPE += [0] * 10000
 
 vm = emulate(TAPE, [ord(c) for c in TAS][::-1])
 try:

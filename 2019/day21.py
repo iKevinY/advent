@@ -2,7 +2,6 @@ import fileinput
 from intcode import emulate
 
 TAPE = [int(x) for x in fileinput.input()[0].split(',')]
-TAPE += [0] * 10000
 
 walking = """\
 OR D J

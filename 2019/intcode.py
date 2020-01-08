@@ -28,7 +28,7 @@ def debug_param_mode(param, mode, relative_base):
         return '%({}{}{})'.format(relative_base, '+' if param >= 0 else '', param)
 
 
-def parse_mode(tape, mode_op, a, b, c):
+def parse_mode(mode_op, a, b, c):
     op = mode_op % 100
     mode_a = (mode_op // 100) % 10
     mode_b = (mode_op // 1000) % 10
@@ -37,8 +37,10 @@ def parse_mode(tape, mode_op, a, b, c):
     return op, mode_a, mode_b, mode_c
 
 
-def emulate(tape, inputs, pc=0, relative_base=0, debug=False):
-    tape = tape[:]
+def emulate(base_tape, inputs, pc=0, relative_base=0, debug=False):
+    tape = defaultdict(int)
+    for i, v in enumerate(base_tape):
+        tape[i] = v
 
     def resolve_modes(op, params, modes):
         res = [a, b, c]
@@ -62,9 +64,12 @@ def emulate(tape, inputs, pc=0, relative_base=0, debug=False):
 
         return res
 
-    while pc < len(tape):
-        mode_op, a, b, c = tape[pc:pc+4]
-        op, mode_a, mode_b, mode_c = parse_mode(tape, mode_op, a, b, c)
+    while True:
+        mode_op = tape[pc]
+        a = tape[pc+1]
+        b = tape[pc+2]
+        c = tape[pc+3]
+        op, mode_a, mode_b, mode_c = parse_mode(mode_op, a, b, c)
         modes = [mode_a, mode_b, mode_c]
         last_pc = pc
 

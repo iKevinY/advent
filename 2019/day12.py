@@ -11,7 +11,7 @@ def gcd(a, b):
     return a
 
 
-def lcm(a, b):
+def lcm(a, b, *args):
     """Compute the lowest common multiple of a and b"""
     return a * b / gcd(a, b)
 
