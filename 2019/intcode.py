@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from collections import defaultdict
 
 # Potential debug output
@@ -145,3 +146,28 @@ def emulate(base_tape, inputs, pc=0, relative_base=0, debug=False):
         # HALT
         elif op == 99:
             raise StopIteration()
+
+
+if __name__ == '__main__':
+    import sys
+
+    if len(sys.argv) < 2:
+        print "Usage: intcode.py <intcode_program> [stdin]"
+        sys.exit(2)
+
+    with open(sys.argv[1]) as f:
+        tape = [int(x) for x in f.readlines()[0].split(',')]
+
+    inputs = []
+
+    if len(sys.argv) >= 3:
+        with open(sys.argv[2]) as f:
+            inputs = [int(x) for x in f.readlines()[0].split(',')]
+
+    vm = emulate(tape, inputs)
+
+    try:
+        while True:
+            print(next(vm))
+    except StopIteration:
+        pass
