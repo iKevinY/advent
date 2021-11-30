@@ -2,6 +2,8 @@ import re
 import math
 import hashlib
 import operator
+import copy
+from collections import Counter
 from functools import total_ordering
 
 
@@ -76,6 +78,70 @@ def lcm(a, b):
     return a * b / gcd(a, b)
 
 
+def egcd(a, b):
+    x0, x1, y0, y1 = 1, 0, 0, 1
+    while b:
+        q, a, b = a // b, b, a % b
+        x0, x1 = x1, x0 - q * x1
+        y0, y1 = y1, y0 - q * y1
+    return a, x0, y0
+
+def modinv(a, n):
+    g, x, _ = egcd(a, n)
+    if g == 1:
+        return x % n
+    else:
+        raise ValueError("%d is not invertible mod %d" % (a, n))
+
+def crt(rems, mods):
+    ''' Solve a system of modular equivalences via the Chinese Remainder Theorem.
+    Does not require pairwise coprime moduli. '''
+
+    # copy inputs
+    orems, omods = rems, mods
+    rems = list(rems)
+    mods = list(mods)
+
+    newrems = []
+    newmods = []
+
+    for i in range(len(mods)):
+        for j in range(i+1, len(mods)):
+            g = gcd(mods[i], mods[j])
+            if g == 1:
+                continue
+            if rems[i] % g != rems[j] % g:
+                raise ValueError("inconsistent remainders at positions %d and %d (mod %d)" % (i, j, g))
+            mods[j] //= g
+
+            while 1:
+                # transfer any remaining gcds to mods[j]
+                g = gcd(mods[i], mods[j])
+                if g == 1:
+                    break
+                mods[i] //= g
+                mods[j] *= g
+
+        if mods[i] == 1:
+            continue
+
+        newrems.append(rems[i] % mods[i])
+        newmods.append(mods[i])
+
+    rems, mods = newrems, newmods
+
+    # standard CRT
+    s = 0
+    n = 1
+    for k in mods:
+        n *= k
+
+    for i in range(len(mods)):
+        ni = n // mods[i]
+        s += rems[i] * modinv(ni, mods[i]) * ni
+    return s % n, n
+
+
 def min_max_xy(points):
     if len(points) == 0:
         return None, None, None, None
@@ -93,23 +159,71 @@ def min_max_xy(points):
     return min_x, max_x, min_y, max_y
 
 
-def print_grid(grid, f=None):
+def print_grid(grid, f=None, quiet=False):
     if f is None:
         f = lambda x: x  # NOQA
+
+    counts = Counter()
+    serialized = []
 
     if type(grid) is dict:
         positions = grid.keys()
         min_x, max_x, min_y, max_y = min_max_xy(positions)
         if type(positions[0]) is tuple:
             for y in range(min_y, max_y + 1):
-                print ''.join(f(grid.get((x, y), ' ')) for x in range(min_x, max_x + 1))
+                row = ''.join(f(grid.get((x, y), ' ')) for x in range(min_x, max_x + 1))
+                if not quiet:
+                    print row
+                serialized.append(row)
+                for c in row:
+                    counts[c] += 1
+
         else:
             # (x, y) => point
             for y in range(min_y, max_y + 1):
-                print ''.join(f(grid.get(Point(x, y), ' ')) for x in range(min_x, max_x + 1))
+                row = ''.join(f(grid.get(Point(x, y), ' ')) for x in range(min_x, max_x + 1))
+                if not quiet:
+                    print row
+                serialized.append(row)
+                for c in row:
+                    counts[c] += 1
     else:
         for y in range(len(grid)):
-            print ''.join(f(grid[y][x]) for x in range(len(grid[0])))
+            row = ''.join(f(grid[y][x]) for x in range(len(grid[0])))
+            if not quiet:
+                print row
+            serialized.append(row)
+            for c in row:
+                counts[c] += 1
+
+    # if not quiet:
+    #     print "height={} ({} -> {})".format(max_y - min_y + 1, min_y, max_y)
+    #     print "width={} ({} -> {})".format(max_x - min_x + 1, min_x, max_x)
+    #     print "Statistics:"
+    #     for item, num in counts.most_common():
+    #         print "{}: {}".format(item, num)
+
+    return serialized
+
+def resolve_mapping(candidates):
+    resolved = {}
+
+    # Ensure the mapping is key -> set(values).
+    candidates_map = {}
+    for k, v in candidates.items():
+        candidates_map[k] = set(v)
+
+    while len(resolved) < len(candidates_map):
+        for candidate in candidates_map:
+            if len(candidates_map[candidate]) == 1 and candidate not in resolved:
+                r = candidates_map[candidate].pop()
+                for c in candidates_map:
+                    candidates_map[c].discard(r)
+
+                resolved[candidate] = r
+                break
+
+    return resolved
 
 
 def memoize(f):
@@ -117,9 +231,10 @@ def memoize(f):
     cache = {}
 
     def _mem_fn(*args):
-        if args not in cache:
-            cache[args] = f(*args)
-        return cache[args]
+        hargs = (','.join(str(x) for x in args))
+        if hargs not in cache:
+            cache[hargs] = f(*args)
+        return cache[hargs]
 
     _mem_fn.cache = cache
     return _mem_fn
@@ -253,6 +368,19 @@ class Point:
             return math.atan2(self.y, self.x)
         return math.atan2(self.y - to.y, self.x - to.x)
 
+    def rotate(self, turns):
+        """Returns the rotation of the Point around (0, 0) `turn` times clockwise."""
+        turns = turns % 4
+
+        if turns == 1:
+            return Point(self.y, -self.x)
+        elif turns == 2:
+            return Point(-self.x, -self.y)
+        elif turns == 3:
+            return Point(-self.y, self.x)
+        else:
+            return self
+
     @property
     def manhattan(self):
         return abs(self.x) + abs(self.y)
@@ -264,8 +392,20 @@ class Point:
     def neighbours_4(self):
         return [self + p for p in DIRS_4]
 
+    def neighbors_4(self):
+        return self.neighbours_4()
+
+    def neighbours(self):
+        return self.neighbours_4()
+
+    def neighbors(self):
+        return self.neighbours()
+
     def neighbours_8(self):
         return [self + p for p in DIRS_8]
+
+    def neighbors_8(self):
+        return self.neighbours_8()
 
 
 DIRS_4 = DIRS = [

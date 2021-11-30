@@ -8,7 +8,7 @@ from string import ascii_uppercase, ascii_lowercase  # NOQA
 from collections import Counter, defaultdict, deque, namedtuple  # NOQA
 from itertools import count, product, permutations, combinations, combinations_with_replacement  # NOQA
 
-from utils import parse_line, parse_nums, mul, all_unique, factors, memoize, primes, resolve_mapping  # NOQA
+from utils import parse_line, parse_nums, mul, all_unique, factors, memoize, primes  # NOQA
 from utils import chunks, gcd, lcm, print_grid, min_max_xy  # NOQA
 from utils import new_table, transposed, rotated  # NOQA
 from utils import md5, sha256, knot_hash  # NOQA
@@ -35,9 +35,49 @@ for y, line in enumerate(fileinput.input()):
     nums = parse_nums(line)
     data = parse_line(r'', line)
 
-    for x, c in enumerate(line):
-        board[Point(x, y)] = c
+    a, b = line.split(' = ')
+    # print parts
 
-    if y == 0:
-        print(data)
+    if a == 'mask':
+        res.append((None, b))
+    else:
+        res.append((nums[0], nums[1]))
+
+mem = defaultdict()
+
+mask = None
+
+for a, b in res:
+    if a is None:
+        mask = b
+    else:
+        addr = a
+        write = 0
+        floats = [i for i, c in enumerate(reversed(mask)) if c == 'X']
+        # print floats
+        for i, c in enumerate(reversed(mask)):
+            if c == '1':
+                write |= (1 << i)
+            elif c == '0':
+                write |= (addr & (1 << i))
+
+        writes = [write]
+        print writes, floats
+        for i in floats:
+            new_writes = []
+            for w in writes:
+                print w
+                new_writes.append(w & ~(1 << i))
+                new_writes.append(w | (1 << i))
+
+            print new_writes
+            writes = new_writes
+
+        print writes
+
+
+        for w in writes:
+            mem[w] = b
+
+print sum(mem.values())
 
