@@ -26,7 +26,7 @@ res = []
 board = {}
 table = new_table(None, width=2, height=4)
 
-# Uncomment for multi-group style inputs. :c
+# # Uncomment for multi-group style inputs. :c
 # data = ''.join([line for line in fileinput.input()])
 # groups = [g.split('\n') for g in data.split('\n\n')]
 
