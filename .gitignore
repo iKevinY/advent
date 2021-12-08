@@ -1,3 +1,5 @@
 *.pyc
 inputs/
 outputs/
+vm.py
+search.py
