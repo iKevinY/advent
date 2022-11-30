@@ -3,3 +3,5 @@ inputs/
 outputs/
 vm.py
 search.py
+advent.py
+test.py
