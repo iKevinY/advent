@@ -22,7 +22,7 @@ from utils import Point, DIRS, DIRS_4, DIRS_8  # N (0, 1) -> E (1, 0) -> S (0, -
 # combinations('ABCD', 2)                     AB AC AD BC BD CD
 # combinations_with_replacement('ABCD', 2)    AA AB AC AD BB BC BD CC CD DD
 
-# day  .lines()  .nlines()  .paragraphs()  .board()  .pboard()  .tboard()
+# day  .lines  .nlines  .paragraphs  .board  .pboard  .tboard
 
 tot = 0
 res = []

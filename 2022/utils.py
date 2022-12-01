@@ -25,12 +25,17 @@ def parse_line(regex, line):
 
 
 def parse_nums(line, negatives=True):
-    """Returns a list of numbers in `line`."""
+    """
+    Returns a list of numbers in `line`.
+
+    Pass negatives=False to parse 1-2 as [1, 2].
+    """
     num_re = r'-?\d+' if negatives else r'\d+'
     return [int(n) for n in re.findall(num_re, line)]
 
 
-def new_table(val, width, height):
+def new_table(width, height, val=None):
+    """Returns a `width` by `height` table populated with `val`."""
     return [[val for _ in range(width)] for _ in range(height)]
 
 
@@ -64,16 +69,8 @@ def chunks(l, n):
 
 
 def all_unique(lst):
+    """Returns True if all items in `lst` are unique."""
     return len(lst) == len(set(lst))
-
-
-def factors(n):
-    """Returns the factors of n."""
-    return sorted(
-        x for tup in (
-            [i, n // i] for i in range(1, int(n ** 0.5) + 1)
-            if n % i == 0)
-        for x in tup)
 
 
 def gcd(a,b):
@@ -104,8 +101,17 @@ def modinv(a, n):
         raise ValueError("%d is not invertible mod %d" % (a, n))
 
 def crt(rems, mods):
-    ''' Solve a system of modular equivalences via the Chinese Remainder Theorem.
-    Does not require pairwise coprime moduli. '''
+    """
+    Solve a system of modular equivalences via the Chinese Remainder Theorem.
+    Does not require pairwise coprime moduli.
+
+    Returns (n, m), where n is the solution and m is the modulo.
+
+    Arguments
+      rems: the remainders of the problem
+      mods: the modulos of the problem
+
+    """
 
     # copy inputs
     orems, omods = rems, mods
@@ -153,6 +159,10 @@ def crt(rems, mods):
 
 
 def min_max_xy(points):
+    """
+    For a list of points, returns min_x, max_x, min_y, max_y.
+    This works on tuples (x, y) and Point(x, y).
+    """
     if len(points) == 0:
         return None, None, None, None
     if type(points[0]) == tuple:
@@ -280,6 +290,7 @@ def memoize(f):
     return _mem_fn
 
 
+@memoize
 def _eratosthenes(n):
     """http://stackoverflow.com/a/3941967/239076"""
     # Initialize list of primes
@@ -297,9 +308,20 @@ def _eratosthenes(n):
                 _primes[j] = False
 
 
+@memoize
 def primes(n):
     """Return a list of primes from [2, n)"""
     return list(_eratosthenes(n))
+
+
+@memoize
+def factors(n):
+    """Returns the factors of n."""
+    return sorted(
+        x for tup in (
+            [i, n // i] for i in range(1, int(n ** 0.5) + 1)
+            if n % i == 0)
+        for x in tup)
 
 
 def md5(msg):
