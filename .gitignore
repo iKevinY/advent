@@ -5,3 +5,4 @@ vm.py
 search.py
 advent.py
 test.py
+*.sh

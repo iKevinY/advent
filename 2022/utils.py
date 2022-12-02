@@ -469,6 +469,14 @@ class Point:
     def neighbors_8(self):
         return self.neighbours_8()
 
+N = Point(0, 1)
+NE = Point(1, 1)
+E = Point(1, 0)
+SE = Point(1, -1)
+S = Point(0, -1)
+SW = Point(-1, -1)
+W = Point(-1, 0)
+NW = Point(-1, 1)
 
 DIRS_4 = DIRS = [
     Point(0, 1),   # north
@@ -487,3 +495,49 @@ DIRS_8 = [
     Point(-1, 0),   # W
     Point(-1, 1),   # NW
 ]
+
+class UnionFind:
+    """
+    If this comes in handy, thank you mcpower!
+    https://www.reddit.com/r/adventofcode/comments/a9c61w/2018_day_25_solutions/eci5kaf/
+    """
+    # n: int
+    # parents: List[Optional[int]]
+    # ranks: List[int]
+    # num_sets: int
+
+    def __init__(self, n: int) -> None:
+        self.n = n
+        self.parents = [None] * n
+        self.ranks = [1] * n
+        self.num_sets = n
+
+    def find(self, i: int) -> int:
+        p = self.parents[i]
+        if p is None:
+            return i
+        p = self.find(p)
+        self.parents[i] = p
+        return p
+
+    def in_same_set(self, i: int, j: int) -> bool:
+        return self.find(i) == self.find(j)
+
+    def merge(self, i: int, j: int) -> None:
+        i = self.find(i)
+        j = self.find(j)
+
+        if i == j:
+            return
+
+        i_rank = self.ranks[i]
+        j_rank = self.ranks[j]
+
+        if i_rank < j_rank:
+            self.parents[i] = j
+        elif i_rank > j_rank:
+            self.parents[j] = i
+        else:
+            self.parents[j] = i
+            self.ranks[i] += 1
+        self.num_sets -= 1
