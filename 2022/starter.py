@@ -11,9 +11,9 @@ from utils import md5, sha256, VOWELS, CONSONANTS
 from utils import Point, DIRS, DIRS_4, DIRS_8, N, NE, E, SE, S, SW, W, NW
 # Itertools Functions:
 # product('ABCD', repeat=2)                   AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD
-# permutations('ABCD', 2)                     AB AC AD BA BC BD CA CB CD DA DB DC
-# combinations('ABCD', 2)                     AB AC AD BC BD CD
-# combinations_with_replacement('ABCD', 2)    AA AB AC AD BB BC BD CC CD DD
+# permutations('ABCD', 2)                        AB AC AD BA    BC BD CA CB    CD DA DB DC
+# combinations_with_replacement('ABCD', 2)    AA AB AC AD    BB BC BD       CC CD          DD
+# combinations('ABCD', 2)                        AB AC AD       BC BD          CD
 
 # day  .lines  .nlines  .pars  .npars  .board  .pboard  .tboard
 

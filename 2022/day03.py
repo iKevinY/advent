@@ -1,12 +1,11 @@
-import advent
+import fileinput
 from utils import chunks, parts
 
-day = advent.Day(year=2022, day=3)
-
+INPUT = [line.strip() for line in fileinput.input()]
 
 # Part 1
 part_1 = 0
-for line in day:
+for line in INPUT:
     n = len(line)
     fst, snd = parts(line, 2)
 
@@ -22,7 +21,7 @@ print("Part 1:", part_1)
 
 # Part 2
 part_2 = 0
-for a, b, c in chunks(day, 3):
+for a, b, c in chunks(INPUT, 3):
     common = set(a) & set(b) & set(c)
 
     for c in common:
