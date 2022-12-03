@@ -5,7 +5,7 @@ from itertools import count, product, permutations, combinations, combinations_w
 
 import advent
 from utils import parse_line, parse_nums, mul, all_unique, factors, memoize, primes, resolve_mapping
-from utils import chunks, gcd, lcm, print_grid, min_max_xy
+from utils import chunks, parts, gcd, lcm, print_grid, min_max_xy
 from utils import new_table, transposed, rotated, firsts, lasts
 from utils import md5, sha256, VOWELS, CONSONANTS
 from utils import Point, DIRS, DIRS_4, DIRS_8, N, NE, E, SE, S, SW, W, NW
@@ -20,6 +20,5 @@ from utils import Point, DIRS, DIRS_4, DIRS_8, N, NE, E, SE, S, SW, W, NW
 tot = 0
 res = []
 
-day = advent.Day(year=2022, day=1)
-
+day = advent.Day(year=2022, day=0)
 

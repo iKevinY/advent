@@ -67,6 +67,15 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
+def parts(l, n):
+    """Splits l into n equal parts. Excess (if it exists) returned as the n+1-th."""
+    m = len(l) // n
+    for i in range(0, n):
+        yield l[i*m:(i+1)*m]
+
+    if len(l) % n != 0:
+        yield l[m*n:]
+
 
 def all_unique(lst):
     """Returns True if all items in `lst` are unique."""
