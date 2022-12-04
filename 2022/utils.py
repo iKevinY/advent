@@ -198,8 +198,13 @@ def print_grid(grid, f=None, quiet=False):
     needs to be consumed afterwards, and b is a Counter over the values
     in `grid`.
 
-    f: a function to transform the values of grid to something printable.
-    quiet: don't output to stdout.
+    Arguments:
+        f: a function to transform the values of grid to something printable.
+        quiet: don't output to stdout.
+
+    Returns:
+        List[String]: Serialized, printable version of the grid.
+        Counter: The values contained in the grid.
     """
     if f is None:
         f = lambda x: str(x)  # NOQA

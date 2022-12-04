@@ -15,7 +15,7 @@ from utils import Point, DIRS, DIRS_4, DIRS_8, N, NE, E, SE, S, SW, W, NW
 # combinations_with_replacement('ABCD', 2)    AA AB AC AD    BB BC BD       CC CD          DD
 # combinations('ABCD', 2)                        AB AC AD       BC BD          CD
 
-# day  .lines  .nlines  .pars  .npars  .board  .pboard  .tboard
+# day  .lines  .nlines(negs=True)  .pars  .npars(negs=True)  .board  .pboard  .tboard
 
 tot = 0
 res = []
