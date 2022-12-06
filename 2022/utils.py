@@ -82,6 +82,38 @@ def all_unique(lst):
     return len(lst) == len(set(lst))
 
 
+def topsort(graph, tiebreak=None):
+    """
+    Given a graph where graph[x] is an iterable of edges of directed
+    edges originating from x, returns a topologically sorted list of
+    nodes in the graph.
+
+    If `tiebreak` is given, this lambda is passed to sorted() when
+    choosing what node to visit next.
+    """
+    if tiebreak is None:
+        tiebreak = lambda x: x
+
+    visited = set()
+    stack = []
+
+    def _topsort(node):
+        visited.add(node)
+
+        # Reversed because the DFS causes equal level nodes to be popped backwards.
+        for n in sorted(graph[node], key=tiebreak, reverse=True):
+            if n not in visited:
+                _topsort(n)
+
+        stack.append(node)
+
+    for n in sorted(graph, key=tiebreak, reverse=True):
+        if not n in visited:
+            _topsort(n)
+
+    return stack[::-1]
+
+
 def gcd(a,b):
     """Compute the greatest common divisor of a and b"""
     while b > 0:
