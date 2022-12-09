@@ -470,6 +470,12 @@ class Point:
 
     def dist_manhattan(self, other):
         return abs(self.x - other.x) + abs(self.y - other.y)
+    
+    def dist_chess(self, other):
+        return max(abs(self.x - other.x), abs(self.y - other.y))
+    
+    def dist_chebyshev(self, other):
+        return self.dist_chess(other)
 
     def angle(self, to=None):
         if to is None:
@@ -492,6 +498,14 @@ class Point:
     @property
     def manhattan(self):
         return abs(self.x) + abs(self.y)
+    
+    @property
+    def chess(self):
+        return max(abs(self.x), abs(self.y))
+    
+    @property
+    def chebyshev(self):
+        return self.chess
 
     @property
     def length(self):
