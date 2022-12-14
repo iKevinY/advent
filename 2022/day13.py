@@ -1,42 +1,34 @@
 import fileinput
 
 
-def right_order(a, b):
-    for x, y in zip(a, b):
-        if type(x) == int and type(y) == int:
-            if int(x) < int(y):
-                return True
-            elif int(x) > int(y):
-                return False
-            else:
-                continue
-        elif type(x) == list and type(y) == list:
-            # :(
-            # if len(x) == 0:
-            #     return True
-            # elif len(y) == 0:
-            #     return False
-            ret = right_order(x, y)
-            if ret is None:
-                continue
-            else:
-                return ret
+def right_order(x, y):
+    if type(x) == int and type(y) == int:
+        if int(x) < int(y):
+            return True
+        elif int(x) > int(y):
+            return False
         else:
-            if type(x) == int:
-                ret = right_order([x], y)
-            else:
-                ret = right_order(x, [y])
+            return None
 
-            if ret is None:
-                continue
-            return ret
+    if type(x) == int:
+        x = [x]
+    if type(y) == int:
+        y = [y]
 
-    if len(a) < len(b):
+    if len(x) == len(y) == 0:
+        return None
+    elif len(x) == 0:
         return True
-    elif len(a) > len(b):
+    elif len(y) == 0:
         return False
 
-    return None
+    x, *xs = x
+    y, *ys = y
+
+    ret = right_order(x, y)
+    if ret is None:
+        return right_order(xs, ys)
+    return ret
 
 
 # Solve part 1 while parsing input.
