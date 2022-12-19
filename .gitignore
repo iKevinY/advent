@@ -1,6 +1,7 @@
 *.pyc
 inputs/
 outputs/
+wip/
 vm.py
 search.py
 advent.py
