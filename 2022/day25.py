@@ -1,4 +1,6 @@
 import fileinput
+from collections import Counter
+from itertools import zip_longest
 
 SNAFU_DIGITS = {
     '2': 2,
@@ -10,38 +12,21 @@ SNAFU_DIGITS = {
 REVERSE_DIGITS = {v: k for k, v in SNAFU_DIGITS.items()}
 
 
-def decimal_to_base(n, b):
-    if n == 0:
-        return [0]
-    digits = []
-    while n:
-        digits.append(int(n % b))
-        n //= b
-    return digits[::-1]
-
-
-def snafu_to_decimal(s):
-    n = 0
-    for i, c in enumerate(reversed(s)):
-        n += SNAFU_DIGITS[c] * (5 ** i)
-    return n
-
-
-def decimal_to_snafu(n):
-    quinary_digits = decimal_to_base(n, 5)
-    snafu_digits = []
-
-    # Iterate in reverse order through the base-5 digits; if a number larger
-    # than 2 is found, add 1 to the next "place" and take the remainder.
-    for i, n in enumerate(reversed(quinary_digits)):
-        if n >= 3:
-            quinary_digits[-(i+2)] += 1
-            n -= 5
-        snafu_digits = [REVERSE_DIGITS[n]] + snafu_digits
-
-    return ''.join(snafu_digits)
-
-
 # Read problem input and solve problem.
-total = sum(snafu_to_decimal(line.strip()) for line in fileinput.input())
-print("Part 1:", decimal_to_snafu(total))
+nums = [line.strip() for line in fileinput.input()]
+remainder = Counter()
+part_1 = ''
+
+for i, place in enumerate(zip_longest(*(reversed(n) for n in nums), fillvalue='0')):
+    count = sum(SNAFU_DIGITS[c] for c in place) + remainder[i]
+    while not -2 <= count <= 2:
+        if count < 0:
+            remainder[i+1] -= 1
+            count += 5
+        else:
+            remainder[i+1] += 1
+            count -= 5
+
+    part_1 = REVERSE_DIGITS[count] + part_1
+
+print("Part 1:", part_1)
