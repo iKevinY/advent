@@ -21,7 +21,12 @@ for line in fileinput.input():
 
     FLOW[valve] = rate
 
-# Construct compressed graph
+
+# Create compressed graph representations that only contain
+# information between valves that have a non-zero flow, where
+# rather than a unweighted graph of implicit distance 1, the
+# graph contains edge weights of the distance to get from
+# valve X to Y via the shortest path in the global graph.
 def bfs(start, end):
     seen = set()
     horizon = deque([(start, 0)])
@@ -38,11 +43,10 @@ def bfs(start, end):
         for n in GRAPH[curr]:
             horizon.append((n, dist + 1))
 
-
-# Solve part 1.
 START = "AA"
 START_TO_REAL = {}
-REAL = [v for v in GRAPH if FLOW[v] > 0]
+real = [v for v in GRAPH if FLOW[v] > 0]
+REAL = {v: i for i, v in enumerate(real)}
 COMPRESSED = defaultdict(set)
 
 for valve in REAL:
@@ -52,6 +56,25 @@ for a, b in permutations(REAL, 2):
     dist = bfs(a, b)
     COMPRESSED[a].add((b, dist))
     COMPRESSED[b].add((a, dist))
+
+
+# Define helper functions to operate on bitstring representations
+# of which valves have been visited, rather than using sets.
+def bitstring_for_subgraph(nodes):
+    bitstring = 0b0
+    for n in nodes:
+        bitstring |= (1 << REAL[n])
+
+    return bitstring
+
+def is_node_set_in_bitstring(bitstring, node):
+    return bool(bitstring & (1 << REAL[node]))
+
+def set_node_in_bitstring(bitstring, node):
+    return bitstring | (1 << REAL[node])
+
+def is_bitstring_complete(bitstring):
+    return bitstring + 1 == (1 << len(REAL))
 
 
 @memoize
@@ -71,7 +94,7 @@ def search(nodes, max_time):
     for node in nodes:
         start_time = START_TO_REAL[node] + 1
         start_pressure = (max_time - start_time) * FLOW[node]
-        state = (start_time, node, start_pressure, frozenset([node]))
+        state = (start_time, node, start_pressure, bitstring_for_subgraph([node]))
         horizon.append(state)
 
     while horizon:
@@ -85,7 +108,7 @@ def search(nodes, max_time):
 
         if time >= max_time:
             continue
-        elif len(opened) >= len(nodes):
+        elif is_bitstring_complete(opened):
             continue
 
         if pressure > best:
@@ -93,24 +116,24 @@ def search(nodes, max_time):
 
         # move
         for n, dist in compressed[curr]:
-            if n not in opened:
-                new_time = time + dist + 1
+            if not is_node_set_in_bitstring(opened, n):
+                new_time = time + dist + 1  # time to move + 1 minute to open
                 extra_pressure = (max_time - new_time) * FLOW[n]
-                new_opened = frozenset([n]) | opened
+                new_opened = set_node_in_bitstring(opened, n)
                 new_state = (new_time, n, pressure + extra_pressure, new_opened)
 
                 horizon.append(new_state)
 
     return best
 
-print("Part 1:", search(COMPRESSED, 30))
 
+# Solve part 1.
+print("Part 1:", search(REAL, 30))
 
 # Solve part 2.
 def dual_search(partition):
     a, b = partition
-    return search(frozenset(a), 26) + search(frozenset(b), 26)
-
+    return search(a, 26) + search(b, 26)
 
 part_2 = 0
 partitions = list(set_partitions(REAL, 2))
