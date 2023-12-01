@@ -4,9 +4,7 @@ from functools import reduce
 from itertools import permutations
 from concurrent.futures import ProcessPoolExecutor
 
-from utils import parse_line, memoize
-
-from more_itertools import set_partitions
+from utils import parse_line
 
 
 GRAPH = defaultdict(set)
@@ -60,13 +58,6 @@ for a, b in permutations(REAL, 2):
 
 # Define helper functions to operate on bitstring representations
 # of which valves have been visited, rather than using sets.
-def bitstring_for_subgraph(nodes):
-    bitstring = 0b0
-    for n in nodes:
-        bitstring |= (1 << REAL[n])
-
-    return bitstring
-
 def is_node_set_in_bitstring(bitstring, node):
     return bool(bitstring & (1 << REAL[node]))
 
@@ -77,24 +68,27 @@ def is_bitstring_complete(bitstring):
     return bitstring + 1 == (1 << len(REAL))
 
 
-@memoize
-def search(nodes, max_time):
+def search(init_opened, max_time):
     best = 0
     seen = {}
     horizon = deque()
 
     # Recompute compressed graph based on limited nodes available.
     compressed = {
-        a: [(n, d) for n, d in b if n in nodes]
-        for a, b in COMPRESSED.items() if a in nodes
+        a: [(n, d) for n, d in b if not is_node_set_in_bitstring(init_opened, n)]
+        for a, b in COMPRESSED.items() if not is_node_set_in_bitstring(init_opened, a)
     }
 
     # Seed start positions with time and pressure based on the time it takes
     # to get from AA to that valve, + 1 minute to open the valve.
-    for node in nodes:
+    for node in REAL:
+        if is_node_set_in_bitstring(init_opened, node):
+            continue
+
         start_time = START_TO_REAL[node] + 1
         start_pressure = (max_time - start_time) * FLOW[node]
-        state = (start_time, node, start_pressure, bitstring_for_subgraph([node]))
+        start_opened = set_node_in_bitstring(init_opened, node)
+        state = (start_time, node, start_pressure, start_opened)
         horizon.append(state)
 
     while horizon:
@@ -115,7 +109,7 @@ def search(nodes, max_time):
             best = pressure
 
         # move
-        for n, dist in compressed[curr]:
+        for n, dist in COMPRESSED[curr]:
             if not is_node_set_in_bitstring(opened, n):
                 new_time = time + dist + 1  # time to move + 1 minute to open
                 extra_pressure = (max_time - new_time) * FLOW[n]
@@ -128,7 +122,7 @@ def search(nodes, max_time):
 
 
 # Solve part 1.
-print("Part 1:", search(REAL, 30))
+print("Part 1:", search(0b0, 30))
 
 # Solve part 2.
 def dual_search(partition):
@@ -136,10 +130,16 @@ def dual_search(partition):
     return search(a, 26) + search(b, 26)
 
 part_2 = 0
-partitions = list(set_partitions(REAL, 2))
+
+# Given the bitstring representation of opened nodes, the set of all possibilities is
+# just all pairs of numbers that sum to 2^(len(REAL)) - 1. We iterate over the range
+# of half this amount to ensure we don't double-up on pairs, thus removing the need
+# for any sort of memoization (we compute precisely the results we need).
+target = (1 << len(REAL)) - 1
+partitions = [(n, target - n) for n in range(1 << (len(REAL) - 1))]
 
 # This is not the optimal solution yet. If it were, I wouldn't be parallelizing.
-parallel = True
+parallel = False
 
 if parallel:
     with ProcessPoolExecutor() as pool:
@@ -156,7 +156,7 @@ else:
     except ImportError:
         loading = lambda x, total: x
 
-    for p in loading(set_partitions(REAL, 2), total=len(partitions)):
+    for p in loading(partitions, total=len(partitions)):
         part_2 = max(part_2, dual_search(p))
 
 print("Part 2:", part_2)
