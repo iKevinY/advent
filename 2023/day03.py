@@ -6,9 +6,8 @@ PARTS = []
 # Parse input.
 for y, line in enumerate(fileinput.input()):
     num = ''
-    start = None
-    for x, c in enumerate(line.strip()):
-        if not c.isdigit() and c != '.':
+    for x, c in enumerate(line):
+        if not c.isdigit() and c != '.' and c != '\n':
             SYMBOLS[x, y] = c
 
         if c.isdigit():
@@ -16,11 +15,8 @@ for y, line in enumerate(fileinput.input()):
                 start = x
             num += c
         elif num:
-            PARTS.append((int(num), y, start, x - 1))
+            PARTS.append((int(num), y, x - len(num), x - 1))
             num = ''
-
-    if num:
-        PARTS.append((int(num), y, start, x - 1))
 
 # Solve problem.
 part_1_seen = set()
