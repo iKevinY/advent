@@ -18,6 +18,7 @@ from utils import Point, DIRS, DIRS_4, DIRS_8, N, NE, E, SE, S, SW, W, NW
 # day  .lines  .nlines(negs=True)  .pars  .npars(negs=True)  .board  .pboard  .tboard
 
 tot = 0
+ans = ''
 res = []
 
 day = advent.Day(year=2023, day=0)
