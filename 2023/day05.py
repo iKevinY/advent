@@ -1,5 +1,6 @@
 import fileinput
 import itertools
+import multiprocessing
 
 
 def seed_to_location(mappings, seed):
@@ -47,13 +48,24 @@ for m in raw_mappings:
 print("Part 1:", min(seed_to_location(mappings, seed) for seed in seeds))
 
 # Solve Part 2.
+MULTITHREAD = True
+NUM_THREADS = multiprocessing.cpu_count()
+
+def worker(offset, step=NUM_THREADS):
+    for location in itertools.count(start=(1 + offset), step=step):
+        seed = location_to_seed(mappings, location)
+        if seed_in_start_range(seed, seed_starts, seed_ranges):
+            return location
+
+
 seed_starts = seeds[::2]
 seed_ranges = seeds[1::2]
 
-for location in itertools.count(start=1):
-    seed = location_to_seed(mappings, location)
-    if seed_in_start_range(seed, seed_starts, seed_ranges):
-        break
+if MULTITHREAD:
+    with multiprocessing.Pool(processes=NUM_THREADS) as pool:
+        results = pool.map(worker, range(NUM_THREADS))
+else:
+    results = [worker(0, step=1)]
 
-print("Part 2:", location)
+print("Part 2:", min(results))
 
