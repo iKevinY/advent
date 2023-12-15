@@ -381,6 +381,13 @@ def sha256(msg):
     s.update(msg)
     return s.hexdigest()
 
+def HASH(code):
+    val = 0
+    for c in code:
+        val += ord(c)
+        val *= 17
+        val %= 256
+    return val
 
 def knot_hash(msg):
     lengths = [ord(x) for x in msg] + [17, 31, 73, 47, 23]
