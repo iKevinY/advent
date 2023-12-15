@@ -20,6 +20,9 @@ def parse_line(regex, line):
             ret.append(int(match))
         except ValueError:
             ret.append(match)
+        except TypeError:
+            # None match
+            pass
 
     return ret
 
