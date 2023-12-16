@@ -29,11 +29,11 @@ def simulate_light(grid, start, initial_d):
         if grid[photon] == '.':
             photons.append((photon + d, d))
         elif grid[photon] == '/':
-            nd = [W, E, S, N][[N, S, E, W].index(d)]
-            photons.append((photon + nd, nd))
+            # ~d takes N <-> E and S <-> W
+            photons.append((photon + ~d, ~d))
         elif grid[photon] == '\\':
-            nd = [E, W, N, S][[N, S, E, W].index(d)]
-            photons.append((photon + nd, nd))
+            # -~d takes N <-> W and S <-> E
+            photons.append((photon + -~d, -~d))
         elif grid[photon] == '|':
             if d in (N, S):
                 photons.append((photon + d, d))

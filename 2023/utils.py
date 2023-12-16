@@ -466,6 +466,9 @@ class Point:
     def __lt__(self, other):
         return self.length < other.length
 
+    def __invert__(self):
+        return Point(-self.y, -self.x)
+
     def __str__(self):
         return "({}, {})".format(self.x, self.y)
 
