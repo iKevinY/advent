@@ -59,11 +59,27 @@ def walk_loop(graph, start, direction):
             return None
 
         node += direction
-        loop.append(node)
 
         if node == start:
             return loop
 
+        loop.append(node)
+
+
+def discrete_polygon_area(points):
+    # Use shoelace formula to compute internal area.
+    area = 0
+
+    for a, b in zip(points, points[1:] + [points[0]]):
+        area += (b.x + a.x) * (b.y - a.y)
+
+    area = int(abs(area / 2.0))
+
+    # Calculate perimeter.
+    perimeter = sum(a.dist_manhattan(b) for a, b in zip(points, points[1:] + [points[0]]))
+
+    # Account for outer perimeter strip in final area computation.
+    return area + (perimeter // 2) + 1
 
 
 board = {}
@@ -82,4 +98,6 @@ for direction in DIRS:
         break
 
 
-# TODO: Solve part 2 programmatically.
+# Solve part 2 by solving for the polygon area and
+# subtracting off all perimeter points.
+print("Part 2:", discrete_polygon_area(loop) - len(loop))
