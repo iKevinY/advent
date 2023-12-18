@@ -435,6 +435,28 @@ def hex_distance(x, y, z):
     return (abs(x) + abs(y) + abs(z)) // 2
 
 
+def polygon_perimeter(points):
+    """Given a set of bounding box points, returns the perimeter of the polygon."""
+    return sum(a.dist_manhattan(b) for a, b in zip(points, points[1:] + [points[0]]))
+
+
+def polygon_area(points):
+    """Given a set of integer bounding box points, returns the total area of the polygon."""
+    # Use shoelace formula to compute internal area.
+    area = 0
+
+    for a, b in zip(points, points[1:] + [points[0]]):
+        area += (b.x + a.x) * (b.y - a.y)
+
+    area = int(abs(area / 2.0))
+
+    # Calculate perimeter.
+    perimeter = polygon_perimeter(points)
+
+    # Account for outer perimeter strip in final area computation.
+    return area + (perimeter // 2) + 1
+
+
 @total_ordering
 class Point:
     """Simple 2-dimensional point."""
