@@ -39,7 +39,8 @@ def get_neighbours(graph, node, part_2=False):
 
 
 def longest_path(graph, start, end, part_2=False):
-    horizon = [(start, 0, set())]
+    BITMASK_MAPPING = {k: i for i, k in enumerate(graph)}
+    horizon = [(start, 0, 0b0)]
     best = 0
 
     while horizon:
@@ -49,11 +50,15 @@ def longest_path(graph, start, end, part_2=False):
             best = max(best, dist)
             continue
 
-        if curr in seen:
+        mask = (1 << BITMASK_MAPPING[curr])
+
+        if seen & mask:
             continue
 
+        new_seen = seen | mask
+
         for neighbour, weight in graph[curr]:
-            horizon.append((neighbour, dist + weight, seen | set([curr])))
+            horizon.append((neighbour, dist + weight, new_seen))
 
     return best
 
