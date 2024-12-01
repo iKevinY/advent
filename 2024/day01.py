@@ -11,14 +11,5 @@ for line in fileinput.input():
 lefts.sort()
 rights.sort()
 
-distances = 0
-for l, r in zip(lefts, rights):
-    distances += abs(l - r)
-
-print("Part 1:", distances)
-
-similarity = 0
-for l in lefts:
-    similarity += l * rights.count(l)
-
-print("Part 2:", similarity)
+print("Part 1:", sum(abs(l - r) for l, r in zip(lefts, rights)))
+print("Part 2:", sum(l * rights.count(l) for l in lefts))
