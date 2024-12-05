@@ -16,6 +16,7 @@ def mid(lst):
     return lst[(len(lst) - 1) // 2]
 
 
+# Parse problem input.
 on_updates = False
 graph = defaultdict(set)
 updates = []
@@ -36,15 +37,12 @@ for update in updates:
     if is_unordered(graph, update) == -1:
         part_1 += mid(update)
     else:
-        while True:
-            swap = False
-            for i, n in enumerate(update):
-                afters = update[i+1:]
-                if any(n in graph[a] for a in afters):
-                    update[i], update[i + 1] = update[i + 1], update[i]
-                    swap = True
-            if not swap:
-                break
+        # Sort based on how many pages in `updates` should come after a given page.
+        afters = {}
+        for i, n in enumerate(update):
+            afters[n] = len(graph[n] & (set(update) - set([n])))
+
+        update.sort(key=afters.get)
 
         part_2 += mid(update)
 
