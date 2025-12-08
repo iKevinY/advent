@@ -1,6 +1,21 @@
 # iKevinY/advent
 
-My [Advent of Code](https://adventofcode.com) solutions.
+This repository contains my solutions to [Advent of Code](https://adventofcode.com)
+problems.
+
+These are not intended to be the fastest possible solutions, nor are they
+always the solution I came to while solving the problem on the night-of.
+They are cleaned up versions of the code, made to be relatively concise.
+
+In addition, these solutions often rely heavily on importing `utils`, which
+is the `utils.py` file that can be found in each year's subdirectory. This
+often comes up when dealing with grids, because writing the same utility
+classes for operating on objects in 2D space gets very repetitive.
+
+For some insight into what my solutions look like *while* I'm solving a problem,
+see my YouTube playlists of solves from [2022](https://www.youtube.com/playlist?list=PLrQuqV9YO5hQ-WndrHMWFlYyG8OWTnHng),
+[2023](https://www.youtube.com/playlist?list=PLrQuqV9YO5hSrdTtbumg5hemhq1ntjbNA),
+and [2024](https://www.youtube.com/playlist?list=PLrQuqV9YO5hRIR4AV5EmP-DSkRaflM9Qf).
 
 
 ## Test Runner
