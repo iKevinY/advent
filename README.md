@@ -16,8 +16,8 @@ For some insight into what my solutions look like *while* I'm solving a problem,
 see my YouTube playlists of solves from [2022](https://www.youtube.com/playlist?list=PLrQuqV9YO5hQ-WndrHMWFlYyG8OWTnHng),
 [2023](https://www.youtube.com/playlist?list=PLrQuqV9YO5hSrdTtbumg5hemhq1ntjbNA),
 and [2024](https://www.youtube.com/playlist?list=PLrQuqV9YO5hRIR4AV5EmP-DSkRaflM9Qf).
-I also wrote a blog post about [Going Fast In Advent of Code](https://kevinyap.ca/2019/12/going-fast-in-advent-of-code/)
-that details some strategies used to solve problems quickly.
+I also [wrote a blog post](https://kevinyap.ca/2019/12/going-fast-in-advent-of-code/)
+that details some strategies to solve problems quickly.
 
 
 ## Test Runner
